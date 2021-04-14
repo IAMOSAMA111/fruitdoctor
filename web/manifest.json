@@ -1,6 +1,6 @@
 {
-    "name": "fruitdoctor",
-    "short_name": "fruitdoctor",
+    "name": "flutter_doctor",
+    "short_name": "flutter_doctor",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
