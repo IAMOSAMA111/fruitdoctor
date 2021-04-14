@@ -80,8 +80,7 @@ flutter:
     - assets/images/
     - assets/images/Components/
     - assets/images/home/
-    - assets/model/gradingmodel.tflite
-    - assets/model/gradinglabels.txt
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
