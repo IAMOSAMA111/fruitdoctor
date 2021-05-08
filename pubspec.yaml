@@ -29,7 +29,7 @@ dependencies:
   curved_navigation_bar: ^0.3.4
   geolocator: ^5.3.1
   animated_widgets: ^1.0.6
-  flutter_svg: ^0.19.1
+  flutter_svg: ^0.22.0
   flutter_facebook_login: ^1.2.0
   google_sign_in: ^4.5.6
   dio: ^3.0.10
@@ -45,7 +45,7 @@ dependencies:
   flutter_mailer: ^1.0.1
   flutter_gifimage: ^1.0.0
   flutter_spinkit: ^4.1.2+1
-  webview_flutter: ^1.0.7
+  webview_flutter: 
   camera:
   path_provider:
   path:
@@ -80,6 +80,10 @@ flutter:
     - assets/images/
     - assets/images/Components/
     - assets/images/home/
+    - assets/images/home/orange0.jpg
+    - assets/images/home/orange1.jpg
+    - assets/images/home/orange2.jpg
+    - assets/images/home/orange3.jpg
 
 
 
