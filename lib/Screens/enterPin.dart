@@ -11,6 +11,7 @@ import 'package:animated_widgets/animated_widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pin_entry_text_field/pin_entry_text_field.dart';
 import 'package:flutter_gifimage/flutter_gifimage.dart';
+import 'package:page_transition/page_transition.dart';
 
 class EnterPin extends StatefulWidget {
   static const String id = 'EnterPin';
@@ -114,9 +115,11 @@ class _EnterPinState extends State<EnterPin> {
                                             fontSize: 16.0);
                                         Navigator.push(
                                             context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    (Login())));
+                                            PageTransition(
+                                              type: PageTransitionType
+                                                  .rightToLeft,
+                                              child: Login(),
+                                            ));
                                       } else {
                                         this.setState(() {
                                           isLoading = false;

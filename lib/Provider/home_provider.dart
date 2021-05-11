@@ -5,9 +5,9 @@ import 'package:flutter_doctor/Screens/profile.dart';
 import 'package:flutter_doctor/Screens/scraper.dart';
 
 class HomeProvider extends ChangeNotifier {
-  int _selectedPage = 0;
+  static int _selectedPage = 0;
 
-  final _pageOption = [Community(), ScraperScreen(), Profile()];
+  static final _pageOption = [Community(), ScraperScreen(), Profile()];
 
   List<Widget> _temp = [];
 
@@ -30,5 +30,9 @@ class HomeProvider extends ChangeNotifier {
     _selectedPage = page;
 
     notifyListeners();
+  }
+
+  static void setSelected(int page) {
+    _selectedPage = page;
   }
 }

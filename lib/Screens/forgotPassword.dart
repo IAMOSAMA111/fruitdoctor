@@ -10,6 +10,8 @@ import 'package:wc_form_validators/wc_form_validators.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:email_validator/email_validator.dart' as eValidator;
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:flutter_doctor/utilities/auth.dart' as auth;
 
 class Forgot_Password extends StatefulWidget {
   static const String id = 'Forgot_Password';
@@ -138,36 +140,70 @@ class _Forgot_PasswordState extends State<Forgot_Password> {
                   SizedBox(
                     height: 15,
                   ),
-                  ButtonTheme(
-                    buttonColor: primary_Color,
-                    minWidth: size.width * 0.8,
-                    height: size.height * 0.05,
-                    child: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
-                      onPressed: () {
-                        if (!_formEmail.currentState.validate()) {
-                          Fluttertoast.showToast(
-                              msg: "Please Enter a valid Email",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              backgroundColor: Colors.red,
-                              textColor: Colors.white,
-                              fontSize: 16.0);
-                        } else {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      (ForgotPassword2(email))));
-                        }
-                      },
-                      child: Text(
-                        'Continue',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      ),
-                    ),
-                  ),
+                  isLoading
+                      ? CircularProgressIndicator(
+                          backgroundColor: primary_Color,
+                        )
+                      : ButtonTheme(
+                          buttonColor: primary_Color,
+                          minWidth: size.width * 0.8,
+                          height: size.height * 0.05,
+                          child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30)),
+                            onPressed: () async {
+                              this.setState(() {
+                                isLoading = true;
+                              });
+                              if (!_formEmail.currentState.validate()) {
+                                Fluttertoast.showToast(
+                                    msg: "Please Enter a valid Email",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    backgroundColor: Colors.red,
+                                    textColor: Colors.white,
+                                    fontSize: 16.0);
+                              } else {
+                                await auth.a
+                                    .sendMail(email, context)
+                                    .then((val) {
+                                  this.setState(() {
+                                    isLoading = false;
+                                  });
+                                  if (val.data['success']) {
+                                    Fluttertoast.showToast(
+                                        msg: val.data['msg'],
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        backgroundColor: Colors.green,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0);
+
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                          type: PageTransitionType.rightToLeft,
+                                          child: ForgotPassword2(email),
+                                        ));
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: val.data['msg'],
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        backgroundColor: Colors.red,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0);
+                                  }
+                                });
+                              }
+                            },
+                            child: Text(
+                              'Continue',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 15),
+                            ),
+                          ),
+                        ),
                   SizedBox(height: 80),
                   Row(
                     children: [

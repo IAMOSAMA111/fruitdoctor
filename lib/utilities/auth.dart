@@ -1,5 +1,6 @@
 library fruit_doctor.auth;
 
+import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -17,6 +18,8 @@ import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
+import 'package:flutter_doctor/Provider/home_provider.dart';
+import 'package:page_transition/page_transition.dart';
 
 Auth a = Auth.getInstance();
 enum E { username, email, photoURL }
@@ -92,9 +95,30 @@ class Auth {
 
   loginWithLocalAccount(email, password) async {
     try {
-      return await dio.post('https://fruitdoctor.herokuapp.com/authenticate',
+      var result = await dio.post(
+          'https://fruitdoctor.herokuapp.com/authenticate',
           data: {"email": email, "password": password},
           options: Options(contentType: Headers.formUrlEncodedContentType));
+      if (result.data['success']) {
+        a.isLoggedIn = true;
+        var token = result.data['token'];
+        await a.getinfo(token).then((info) async {
+          a.userProfile[E.username.index] = info.data['name'];
+          a.userProfile[E.email.index] = info.data['email'];
+          a.userProfile[E.photoURL.index] = null;
+
+          SharedPreferences sharedPreferences =
+              await SharedPreferences.getInstance();
+
+          await sharedPreferences.setString('name', info.data['name']);
+          await sharedPreferences.setString('email', info.data['email']);
+          await sharedPreferences.setString('url', null);
+          await sharedPreferences.setBool("loggedin", true);
+          print('yessssss' + sharedPreferences.getString('name'));
+        });
+      }
+
+      return result;
     } on DioError catch (e) {
       Fluttertoast.showToast(
           msg: e.response.data['msg'],
@@ -138,7 +162,6 @@ class Auth {
             'https://graph.facebook.com/v2.12/me?fields=name,picture,email&access_token=${token}');
         final profile = JSON.jsonDecode(graphResponse.body);
         takeToHome(context);
-        print(profile);
         userPrf = profile;
         //setting the user data fields
         SharedPreferences sharedPreferences =
@@ -165,11 +188,22 @@ class Auth {
     }
   }
 
-  logout() async {
+  logout(context) async {
     facebookLogin.logOut();
     _googleSignIn.signOut();
     isLoggedIn = false;
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    await sharedPreferences.setString('name', '');
+    await sharedPreferences.setString('email', '');
+    await sharedPreferences.setString('url', '');
+    await sharedPreferences.setBool('loggedin', false);
+    //HomeProvider.setPage(0);
     //userProfile = null;
+    HomeProvider.setSelected(0);
+    while (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
     print('logged out');
   }
 
@@ -205,8 +239,9 @@ class Auth {
         context, MaterialPageRoute(builder: (context) => (Welcome())));
     Navigator.push(
         context,
-        MaterialPageRoute(
-            builder: (context) =>
-                (userProfile != null ? BottomNavigation() : () => {})));
+        PageTransition(
+          type: PageTransitionType.rightToLeft,
+          child: userProfile != null ? BottomNavigation() : () => {},
+        ));
   }
 }

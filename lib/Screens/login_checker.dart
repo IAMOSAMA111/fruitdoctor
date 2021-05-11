@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_doctor/Provider/get_User_auth.dart';
 import 'package:flutter_doctor/Screens/login.dart';
 import 'package:flutter_doctor/Screens/welcome.dart';
+import 'package:flutter_doctor/utilities/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_doctor/Screens/loader.dart';
 import 'bottomnav.dart';
+import 'package:page_transition/page_transition.dart';
 
 class LoginChecker extends StatefulWidget {
   static const String id = "LoginChecker";
@@ -21,11 +23,24 @@ class _LoginCheckerState extends State<LoginChecker> {
 
     bool logedin = await sharedpref.getBool("loggedin");
     if (logedin == null || logedin == false) {
+      // this.setState(() {
+      //   isLoading = false;
+      // });
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => (Welcome())));
+          context,
+          PageTransition(
+            type: PageTransitionType.rightToLeft,
+            child: Welcome(),
+          ));
     } else {
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => (BottomNavigation())));
+      // this.setState(() {
+      //   isLoading = false;
+      // });
+
+      Navigator.of(context).pushReplacement(PageTransition(
+        type: PageTransitionType.rightToLeft,
+        child: BottomNavigation(),
+      ));
     }
   }
 
