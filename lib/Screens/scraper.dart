@@ -171,7 +171,8 @@ class _ScraperScreenState extends State<ScraperScreen> {
   }
 
   Future getData() async {
-    String url = 'http://10.0.2.2:5000/get_json_file';
+    String url =
+        'https://fruit-doctor-python-server.herokuapp.com/get_json_file';
     Response response = await get(url);
     return response.body;
   }
@@ -185,7 +186,8 @@ class _ScraperScreenState extends State<ScraperScreen> {
   }
 
   Future getDataInternational() async {
-    String url = 'http://10.0.2.2:5000/get_json_file_international';
+    String url =
+        'https://fruit-doctor-python-server.herokuapp.com/get_json_file_international';
     Response response = await get(url);
     return response.body;
   }

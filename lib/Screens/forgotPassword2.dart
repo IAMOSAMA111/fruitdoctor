@@ -11,6 +11,7 @@ import 'package:animated_widgets/animated_widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pin_entry_text_field/pin_entry_text_field.dart';
 import 'package:flutter_gifimage/flutter_gifimage.dart';
+import 'package:page_transition/page_transition.dart';
 
 class ForgotPassword2 extends StatefulWidget {
   static const String id = 'EnterPin';
@@ -24,34 +25,11 @@ class ForgotPassword2 extends StatefulWidget {
 
 class _ForgotPassword2State extends State<ForgotPassword2> {
   var _email;
-  bool isLoading = false;
 
   _ForgotPassword2State(e) {
     this._email = e;
-    sendMail();
   }
 /////
-  sendMail() {
-    auth.a.sendMail(_email, context).then((val) {
-      if (val.data['success']) {
-        Fluttertoast.showToast(
-            msg: val.data['msg'],
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      } else {
-        Fluttertoast.showToast(
-            msg: val.data['msg'],
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      }
-    });
-  }
 
 /////
   @override
@@ -60,104 +38,101 @@ class _ForgotPassword2State extends State<ForgotPassword2> {
     Size socialLogin = MediaQuery.of(context).size;
     Color c = Colors.blue;
 
-    if (isLoading) {
-      return Loader();
-    } else
-      return SafeArea(
-          child: Scaffold(
-              body: Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: Stack(children: [
-                    SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 100),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(400),
-                            child: Image(
-                              height: 200,
-                              image: AssetImage(
-                                  "assets/images/email_sent_animation3.gif"),
-                            ),
+    return SafeArea(
+        child: Scaffold(
+            body: Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Stack(children: [
+                  SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 100),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(400),
+                          child: Image(
+                            height: 200,
+                            image: AssetImage(
+                                "assets/images/email_sent_animation3.gif"),
                           ),
-                          SizedBox(height: 50),
-                          Text("Enter the 6 digit pin sent to your email!",
-                              style: TextStyle(
-                                color: primary_Color,
-                              )),
-                          SizedBox(height: 50),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 10,
-                              ),
-                              PinEntryTextField(
-                                fields: 6,
-                                showFieldAsBox: true,
-                                onSubmit: (String pin) {
-                                  if (pin.toString() ==
-                                      auth.a.code.toString()) {
+                        ),
+                        SizedBox(height: 50),
+                        Text("Enter the 6 digit pin sent to your email!",
+                            style: TextStyle(
+                              color: primary_Color,
+                            )),
+                        SizedBox(height: 50),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 10,
+                            ),
+                            PinEntryTextField(
+                              fields: 6,
+                              showFieldAsBox: true,
+                              onSubmit: (String pin) {
+                                if (pin.toString() == auth.a.code.toString()) {
+                                  Fluttertoast.showToast(
+                                      msg: "Verification Successful",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: Colors.green,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0);
+                                  //taking the user to change password page
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        type: PageTransitionType.rightToLeft,
+                                        child: Forgot_Password3(_email),
+                                      ));
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Verification Failed",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 50),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Did not receive the code? ",
+                              style: labelStyle1,
+                            ),
+                            GestureDetector(
+                              onTap: () => {
+                                auth.a.sendMail(_email, context).then((val) {
+                                  if (val.data['success']) {
                                     Fluttertoast.showToast(
-                                        msg: "Verification Successful",
+                                        msg: val.data['msg'],
                                         toastLength: Toast.LENGTH_SHORT,
                                         gravity: ToastGravity.BOTTOM,
                                         backgroundColor: Colors.green,
                                         textColor: Colors.white,
                                         fontSize: 16.0);
-                                    //taking the user to change password page
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                (Forgot_Password3(_email))));
-                                  } else {
-                                    Fluttertoast.showToast(
-                                        msg: "Verification Failed",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        backgroundColor: Colors.red,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0);
                                   }
-                                },
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 50),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Did not receive the code? ",
-                                style: labelStyle1,
-                              ),
-                              GestureDetector(
-                                onTap: () => {
-                                  auth.a.sendMail(_email, context).then((val) {
-                                    if (val.data['success']) {
-                                      Fluttertoast.showToast(
-                                          msg: val.data['msg'],
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          backgroundColor: Colors.green,
-                                          textColor: Colors.white,
-                                          fontSize: 16.0);
-                                    }
-                                  })
-                                },
-                                child: Text("Resend Email",
-                                    style: TextStyle(
-                                        color: primary_Color,
-                                        fontWeight: FontWeight.bold)),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  ]))));
+                                })
+                              },
+                              child: Text("Resend Email",
+                                  style: TextStyle(
+                                      color: primary_Color,
+                                      fontWeight: FontWeight.bold)),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ]))));
   }
 }

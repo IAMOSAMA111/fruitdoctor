@@ -40,13 +40,25 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 20,
+            width: 10,
           ),
-          Image(
-            image: AssetImage('assets/images/home/apple1.png'),
-          ),
+          Container(
+              height: 150,
+              child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  //backgroundImage: AssetImage('assets/images/home/Apple.png'),
+                  radius: 30,
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/home/Apple.png',
+                      height: 35,
+                    ),
+                  ))),
+          // Image(
+          //   image: AssetImage('assets/images/home/apple1.png'),
+          // ),
           SizedBox(
-            width: 20,
+            width: 10,
           )
         ],
       ),
@@ -56,13 +68,21 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 20,
+            width: 10,
           ),
-          Image(
-            image: AssetImage('assets/images/home/orange.png'),
-          ),
+          CircleAvatar(
+              backgroundColor: Colors.white,
+              //backgroundImage: AssetImage('assets/images/home/Apple.png'),
+              radius: 30,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/home/Banana.png',
+                  height: 35,
+                  width: 40,
+                ),
+              )),
           SizedBox(
-            width: 20,
+            width: 10,
           )
         ],
       ),
@@ -72,13 +92,20 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 20,
+            width: 10,
           ),
-          Image(
-            image: AssetImage('assets/images/home/pomy.png'),
-          ),
+          CircleAvatar(
+              backgroundColor: Colors.white,
+              //backgroundImage: AssetImage('assets/images/home/Apple.png'),
+              radius: 30,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/home/Strawberry.png',
+                  height: 35,
+                ),
+              )),
           SizedBox(
-            width: 20,
+            width: 10,
           )
         ],
       ),
@@ -88,13 +115,66 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 20,
+            width: 10,
           ),
-          Image(
-            image: AssetImage('assets/images/home/waterMellon.png'),
-          ),
+          CircleAvatar(
+              backgroundColor: Colors.white,
+              //backgroundImage: AssetImage('assets/images/home/Apple.png'),
+              radius: 30,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/home/corn.png',
+                  height: 35,
+                ),
+              )),
           SizedBox(
-            width: 20,
+            width: 10,
+          )
+        ],
+      ),
+    ),
+    Tab(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 10,
+          ),
+          CircleAvatar(
+              backgroundColor: Colors.white,
+              //backgroundImage: AssetImage('assets/images/home/Apple.png'),
+              radius: 30,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/home/Citrus.png',
+                  height: 35,
+                ),
+              )),
+          SizedBox(
+            width: 10,
+          )
+        ],
+      ),
+    ),
+    Tab(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 10,
+          ),
+          CircleAvatar(
+              backgroundColor: Colors.white,
+              //backgroundImage: AssetImage('assets/images/home/Apple.png'),
+              radius: 30,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/home/Papaya.jpg',
+                  height: 35,
+                ),
+              )),
+          SizedBox(
+            width: 10,
           )
         ],
       ),
@@ -103,9 +183,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   List<Color> colors = [
     Colors.redAccent,
-    Colors.deepOrangeAccent,
+    Color(0xffDEC10F),
     Colors.red,
-    appbar_Color
+    appbar_Color,
+    Colors.deepOrangeAccent,
+    Color(0xff497D2A),
   ];
 
   Color _selectedTabColor = Colors.redAccent;
@@ -228,35 +310,36 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           SizedBox(
             height: MediaQuery.of(context).size.height / 4,
             child: DefaultTabController(
-              length: 4,
+              length: list.length,
               child: Column(
                 children: <Widget>[
                   Container(
-                    constraints: BoxConstraints.expand(height: 60),
+                    constraints: BoxConstraints.expand(height: 70),
                     child: TabBar(
-                        onTap: (index) {
-                          this.setState(() {
-                            _selectedTabColor = colors[index];
-                            _selectedIndex = index;
-                          });
-                        },
-                        indicator: BoxDecoration(
-                            color: _selectedTabColor.withOpacity(0.8),
-                            borderRadius: BorderRadius.only(
-                              topRight: _selectedIndex == list.length - 1
-                                  ? Radius.circular(0)
-                                  : Radius.circular(25),
-                              topLeft: _selectedIndex == 0
-                                  ? Radius.circular(0)
-                                  : Radius.circular(25),
-                            )),
-                        indicatorColor: primary_Color,
-                        isScrollable: true,
-                        tabs: list),
+                      controller: _controller,
+                      onTap: (index) {
+                        this.setState(() {
+                          _selectedIndex = index;
+                        });
+                      },
+                      indicator: BoxDecoration(
+                          color: colors[_selectedIndex].withOpacity(0.8),
+                          borderRadius: BorderRadius.only(
+                            topRight: _selectedIndex == list.length - 1
+                                ? Radius.circular(0)
+                                : Radius.circular(25),
+                            topLeft: _selectedIndex == 0
+                                ? Radius.circular(0)
+                                : Radius.circular(25),
+                          )),
+                      indicatorColor: primary_Color,
+                      isScrollable: true,
+                      tabs: list,
+                    ),
                   ),
                   Expanded(
                     child: Container(
-                      child: TabBarView(children: [
+                      child: TabBarView(controller: _controller, children: [
                         homeTop(
                             context,
                             colors[0],
@@ -281,6 +364,20 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         homeTop(
                             context,
                             colors[3],
+                            CalculateFertilizer(
+                              fruit: fruit4,
+                            ),
+                            Todoist()),
+                        homeTop(
+                            context,
+                            colors[4],
+                            CalculateFertilizer(
+                              fruit: fruit4,
+                            ),
+                            Todoist()),
+                        homeTop(
+                            context,
+                            colors[5],
                             CalculateFertilizer(
                               fruit: fruit4,
                             ),
@@ -329,7 +426,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: ListView(
                 children: [
                   Container(
-                    margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
+                    margin: EdgeInsets.fromLTRB(5, 10, 5, 5),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -382,10 +479,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                       Container(
                                         height:
                                             MediaQuery.of(context).size.height /
-                                                6,
+                                                7,
                                         width:
                                             MediaQuery.of(context).size.width /
-                                                1.2,
+                                                1.25,
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceEvenly,
@@ -605,7 +702,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   //   height: 5.0,
                   // ),
                   Container(
-                    margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                    margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -659,7 +756,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                       Container(
                                         height:
                                             MediaQuery.of(context).size.height /
-                                                6,
+                                                7,
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,

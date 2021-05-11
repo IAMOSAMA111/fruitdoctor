@@ -7,6 +7,7 @@ import 'package:flutter_doctor/utilities/auth.dart' as auth;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_doctor/Screens/login.dart';
 import 'package:animated_widgets/animated_widgets.dart';
+import 'package:page_transition/page_transition.dart';
 
 class Welcome extends StatefulWidget {
   static const String id = 'Welcome';
@@ -105,8 +106,10 @@ class _WelcomeState extends State<Welcome> {
                             onPressed: () {
                               Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                      builder: (context) => (Login())));
+                                  PageTransition(
+                                    type: PageTransitionType.rightToLeft,
+                                    child: Login(),
+                                  ));
                             },
                             child: Text(
                               'LOGIN',
@@ -126,8 +129,10 @@ class _WelcomeState extends State<Welcome> {
                             onPressed: () {
                               Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                      builder: (context) => (Signup())));
+                                  PageTransition(
+                                    type: PageTransitionType.rightToLeft,
+                                    child: Signup(),
+                                  ));
                             },
                             child: Text(
                               'SIGNUP',
