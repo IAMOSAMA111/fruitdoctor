@@ -9,15 +9,19 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 class GalleryScreen extends StatefulWidget {
+  String endpoint;
+  GalleryScreen(this.endpoint);
   @override
-  _GalleryScreenState createState() => _GalleryScreenState();
+  _GalleryScreenState createState() => _GalleryScreenState(endpoint);
 }
 
 class _GalleryScreenState extends State<GalleryScreen> {
   File _image;
-
+  String endpoint;
+  _GalleryScreenState(this.endpoint);
   _imgFromCamera() async {
     File image = await ImagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 50);
@@ -34,6 +38,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
     setState(() {
       _image = image;
     });
+  }
+
+  Future getPrediction() {
+    List<String> pred;
   }
 
   void _showPicker(context) {
@@ -116,7 +124,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 Dio dio = new Dio();
                 Provider.of<ModelResults>(context, listen: false)
                     .resultsFetch("Loading");
-                var address = 'http://192.168.0.105:5000/grading_model';
+                var address = 'http://10.0.2.2:5000/$endpoint';
 //192.168.0.105
                 debugPrint('here');
 

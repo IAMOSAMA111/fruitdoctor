@@ -29,7 +29,7 @@ dependencies:
   curved_navigation_bar: ^0.3.4
   geolocator: ^5.3.1
   animated_widgets: ^1.0.6
-  flutter_svg: ^0.22.0
+  flutter_svg:
   flutter_facebook_login: ^1.2.0
   google_sign_in: ^4.5.6
   dio: ^3.0.10
@@ -53,7 +53,8 @@ dependencies:
   tflite: ^1.1.1
   select_dialog: ^1.2.3
   keyboard_attachable: ^1.0.3
-  page_transition: "^2.0.2"
+  page_transition:
+  pie_chart:
 
 
   # The following adds the Cupertino Icons font to your application.

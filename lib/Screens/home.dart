@@ -34,6 +34,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   String _currentAddress;
   TabController _controller;
   int _selectedIndex = 0;
+  List<String> _fruits = [
+    "apple",
+    "banana",
+    "strawberry",
+    "corn",
+    "citrus",
+    "papaya"
+  ];
+  List<String> _diseaseEndpoints = [
+    "predictAppleDisease",
+    "predictAppleDisease",
+    "predictStrawberryDisease",
+    "predictCornDisease",
+    "predictAppleDisease",
+    "predictPapayaDisease"
+  ];
   List<Widget> list = [
     Tab(
       child: Row(
@@ -307,88 +323,805 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           SizedBox(
             height: 1,
           ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height / 4,
-            child: DefaultTabController(
-              length: list.length,
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    constraints: BoxConstraints.expand(height: 70),
-                    child: TabBar(
-                      controller: _controller,
-                      onTap: (index) {
-                        this.setState(() {
-                          _selectedIndex = index;
-                        });
-                      },
-                      indicator: BoxDecoration(
-                          color: colors[_selectedIndex].withOpacity(0.8),
-                          borderRadius: BorderRadius.only(
-                            topRight: _selectedIndex == list.length - 1
-                                ? Radius.circular(0)
-                                : Radius.circular(25),
-                            topLeft: _selectedIndex == 0
-                                ? Radius.circular(0)
-                                : Radius.circular(25),
-                          )),
-                      indicatorColor: primary_Color,
-                      isScrollable: true,
-                      tabs: list,
+          Flexible(
+            flex: 1,
+            child: SizedBox(
+              //height: MediaQuery.of(context).size.height / 4,
+              child: DefaultTabController(
+                length: list.length,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      constraints: BoxConstraints.expand(height: 60),
+                      child: TabBar(
+                        controller: _controller,
+                        onTap: (index) {
+                          this.setState(() {
+                            _selectedIndex = index;
+                          });
+                        },
+                        indicator: BoxDecoration(
+                            color: colors[_selectedIndex].withOpacity(0.8),
+                            borderRadius: BorderRadius.only(
+                              topRight: _selectedIndex == list.length - 1
+                                  ? Radius.circular(0)
+                                  : Radius.circular(25),
+                              topLeft: _selectedIndex == 0
+                                  ? Radius.circular(0)
+                                  : Radius.circular(25),
+                            )),
+                        indicatorColor: primary_Color,
+                        isScrollable: true,
+                        tabs: list,
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      child: TabBarView(controller: _controller, children: [
-                        homeTop(
-                            context,
-                            colors[0],
-                            CalculateFertilizer(
-                              fruit: fruit1,
-                            ),
-                            Grading()),
-                        homeTop(
-                            context,
-                            colors[1],
-                            CalculateFertilizer(
-                              fruit: fruit2,
-                            ),
-                            Todoist()),
-                        homeTop(
-                            context,
-                            colors[2],
-                            CalculateFertilizer(
-                              fruit: fruit3,
-                            ),
-                            Todoist()),
-                        homeTop(
-                            context,
-                            colors[3],
-                            CalculateFertilizer(
-                              fruit: fruit4,
-                            ),
-                            Todoist()),
-                        homeTop(
-                            context,
-                            colors[4],
-                            CalculateFertilizer(
-                              fruit: fruit4,
-                            ),
-                            Todoist()),
-                        homeTop(
-                            context,
-                            colors[5],
-                            CalculateFertilizer(
-                              fruit: fruit4,
-                            ),
-                            Todoist()),
-                      ]),
-                    ),
-                  )
-                ],
+                    Expanded(
+                      child: Container(
+                        child: TabBarView(controller: _controller, children: [
+                          homeTop(
+                              context,
+                              colors[0],
+                              CalculateFertilizer(
+                                fruit: fruit1,
+                              ),
+                              Grading()),
+                          homeTop(
+                              context,
+                              colors[1],
+                              CalculateFertilizer(
+                                fruit: fruit2,
+                              ),
+                              Todoist()),
+                          homeTop(
+                              context,
+                              colors[2],
+                              CalculateFertilizer(
+                                fruit: fruit3,
+                              ),
+                              Todoist()),
+                          homeTop(
+                              context,
+                              colors[3],
+                              CalculateFertilizer(
+                                fruit: fruit4,
+                              ),
+                              Todoist()),
+                          homeTop(
+                              context,
+                              colors[4],
+                              CalculateFertilizer(
+                                fruit: fruit4,
+                              ),
+                              Todoist()),
+                          homeTop(
+                              context,
+                              colors[5],
+                              CalculateFertilizer(
+                                fruit: fruit4,
+                              ),
+                              Todoist()),
+                        ]),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
+          Flexible(
+            flex: 2,
+            child: Container(
+                // height: ((MediaQuery.of(context).size.height)),
+                child: ListView(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.fromLTRB(5, 10, 5, 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Card(
+                          elevation: 2,
+                          child: Container(
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 10, 10, 5),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "HEAL YOUR FRUITS",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w900,
+                                          color:
+                                              // _showDiseaseDetector
+                                              //     ? primary_Color:
+                                              Colors.black,
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                          onTap: () {
+                                            setState(() => {
+                                                  _showDiseaseDetector =
+                                                      !_showDiseaseDetector,
+                                                });
+                                          },
+                                          child: Icon(
+                                            _showDiseaseDetector
+                                                ? Icons.arrow_drop_up_rounded
+                                                : Icons.arrow_drop_down_rounded,
+                                            size: 35,
+                                            color:
+                                                // _showDiseaseDetector
+                                                //     ? primary_Color
+                                                //     :
+                                                Colors.black,
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                                _showDiseaseDetector
+                                    ? Column(
+                                        children: [
+                                          Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height /
+                                                7,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                1.25,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                // Image(
+                                                //   image: AssetImage(
+                                                //       'assets/images/home/ins.png'),
+                                                //   height: MediaQuery.of(context)
+                                                //           .size
+                                                //           .height /
+                                                //       7.5,
+                                                //   width: MediaQuery.of(context)
+                                                //           .size
+                                                //           .width /
+                                                //       1.5,
+                                                // ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.camera,
+                                                      size: 50,
+                                                      color: Colors.brown,
+                                                    ),
+                                                    SizedBox(
+                                                      height: 15,
+                                                    ),
+                                                    Text(
+                                                      'Take a Picture',
+                                                      style: TextStyle(
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                    )
+                                                  ],
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                        Icons
+                                                            .arrow_forward_ios_rounded,
+                                                        size: 30,
+                                                        color: Colors.grey),
+                                                    SizedBox(
+                                                      height: 20,
+                                                    ),
+                                                  ],
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                        FontAwesomeIcons
+                                                            .mobileAlt,
+                                                        size: 50,
+                                                        color: Colors
+                                                            .lightBlueAccent),
+                                                    SizedBox(
+                                                      height: 15,
+                                                    ),
+                                                    Text(
+                                                      'See Diagnosis',
+                                                      style: TextStyle(
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                    )
+                                                  ],
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                        Icons
+                                                            .arrow_forward_ios_rounded,
+                                                        size: 30,
+                                                        color: Colors.grey),
+                                                    SizedBox(
+                                                      height: 20,
+                                                    ),
+                                                  ],
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                        Icons
+                                                            .medical_services_outlined,
+                                                        size: 50,
+                                                        color:
+                                                            Colors.redAccent),
+                                                    SizedBox(
+                                                      height: 15,
+                                                    ),
+                                                    Text(
+                                                      'Get Medicine',
+                                                      style: TextStyle(
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                    )
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                // ButtonTheme(
+                                                //   buttonColor: secondary_Color,
+                                                //   minWidth: 100,
+                                                //   child: RaisedButton(
+                                                //     shape: RoundedRectangleBorder(
+                                                //         borderRadius: BorderRadius.circular(15)),
+                                                //     onPressed: () async {
+                                                //       //Navigator.push(context, MaterialPageRoute());
+
+                                                //       final cameras = await availableCameras();
+
+                                                //       Navigator.push(
+                                                //           context,
+                                                //           MaterialPageRoute(
+                                                //               builder: (context) =>
+                                                //                   CameraScreen(cam: cameras[0])));
+                                                //     },
+                                                //     child: Row(
+                                                //       children: <Widget>[
+                                                //         Padding(
+                                                //           padding: const EdgeInsets.all(5.0),
+                                                //           child: Icon(
+                                                //             FontAwesomeIcons.camera,
+                                                //             color: Colors.white,
+                                                //           ),
+                                                //         ),
+                                                //         SizedBox(
+                                                //           width: 10,
+                                                //         ),
+                                                //         Text(
+                                                //           'CAMERA',
+                                                //           style: TextStyle(
+                                                //               color: Colors.white, fontSize: 16),
+                                                //         ),
+                                                //       ],
+                                                //     ),
+                                                //   ),
+                                                // ),
+                                                // SizedBox(
+                                                //   width: 16,
+                                                // ),
+                                                ButtonTheme(
+                                                  buttonColor: primary_Color,
+                                                  minWidth:
+                                                      MediaQuery.of(context)
+                                                              .size
+                                                              .width /
+                                                          1.3,
+                                                  child: RaisedButton(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15)),
+                                                    onPressed: () async {
+                                                      //Navigator.push(context, MaterialPageRoute());
+
+                                                      //final cameras = await availableCameras();
+
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  GalleryScreen(
+                                                                      _diseaseEndpoints[
+                                                                          _selectedIndex])));
+                                                    },
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: <Widget>[
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(5.0),
+                                                          child: Icon(
+                                                              FontAwesomeIcons
+                                                                  .camera,
+                                                              color:
+                                                                  Colors.white,
+                                                              size: 20),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        Text(
+                                                          'Take a Picture',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 14),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ])
+                                        ],
+                                      )
+                                    : Container(),
+                                SizedBox(
+                                  height: 10,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      // SizedBox(
+                      //   height: 5.0,
+                      // ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Card(
+                          elevation: 2,
+                          child: Container(
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 10, 10, 5),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "GRADE YOUR FRUITS",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w900,
+                                          color:
+                                              // _showQualityGrader
+                                              //     ? primary_Color
+                                              //     :
+                                              Colors.black,
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                          onTap: () {
+                                            setState(() => {
+                                                  _showQualityGrader =
+                                                      !_showQualityGrader
+                                                });
+                                          },
+                                          child: Icon(
+                                            _showQualityGrader
+                                                ? Icons.arrow_drop_up_rounded
+                                                : Icons.arrow_drop_down_rounded,
+                                            size: 35,
+                                            color:
+                                                // _showQualityGrader
+                                                //     ? primary_Color
+                                                //     :
+                                                Colors.black,
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                                _showQualityGrader
+                                    ? Column(
+                                        children: [
+                                          Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height /
+                                                7,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Image(
+                                                      image: AssetImage(
+                                                          'assets/images/home/orange3.jpg'),
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height /
+                                                              15,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width /
+                                                              5,
+                                                    ),
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    Text('A')
+                                                  ],
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Image(
+                                                      image: AssetImage(
+                                                          'assets/images/home/orange2.jpg'),
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height /
+                                                              15,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width /
+                                                              5,
+                                                    ),
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    Text('B')
+                                                  ],
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Image(
+                                                      image: AssetImage(
+                                                          'assets/images/home/orange1.jpg'),
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height /
+                                                              15,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width /
+                                                              5,
+                                                    ),
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    Text('C')
+                                                  ],
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Image(
+                                                      image: AssetImage(
+                                                          'assets/images/home/orange0.jpg'),
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height /
+                                                              15,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width /
+                                                              5,
+                                                    ),
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    Text('D')
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                // ButtonTheme(
+                                                //   buttonColor: secondary_Color,
+                                                //   minWidth: 100,
+                                                //   child: RaisedButton(
+                                                //     shape: RoundedRectangleBorder(
+                                                //         borderRadius: BorderRadius.circular(15)),
+                                                //     onPressed: () async {
+                                                //       //Navigator.push(context, MaterialPageRoute());
+
+                                                //       final cameras = await availableCameras();
+
+                                                //       Navigator.push(
+                                                //           context,
+                                                //           MaterialPageRoute(
+                                                //               builder: (context) =>
+                                                //                   CameraScreen(cam: cameras[0])));
+                                                //     },
+                                                //     child: Row(
+                                                //       children: <Widget>[
+                                                //         Padding(
+                                                //           padding: const EdgeInsets.all(5.0),
+                                                //           child: Icon(
+                                                //             FontAwesomeIcons.camera,
+                                                //             color: Colors.white,
+                                                //           ),
+                                                //         ),
+                                                //         SizedBox(
+                                                //           width: 10,
+                                                //         ),
+                                                //         Text(
+                                                //           'CAMERA',
+                                                //           style: TextStyle(
+                                                //               color: Colors.white, fontSize: 16),
+                                                //         ),
+                                                //       ],
+                                                //     ),
+                                                //   ),
+                                                // ),
+                                                // SizedBox(
+                                                //   width: 16,
+                                                // ),
+                                                ButtonTheme(
+                                                  buttonColor: primary_Color,
+                                                  minWidth:
+                                                      MediaQuery.of(context)
+                                                              .size
+                                                              .width /
+                                                          1.3,
+                                                  child: RaisedButton(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15)),
+                                                    onPressed: () async {
+                                                      //Navigator.push(context, MaterialPageRoute());
+
+                                                      //final cameras = await availableCameras();
+
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  GalleryScreen(
+                                                                      "grading_model")));
+                                                    },
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: <Widget>[
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(5.0),
+                                                          child: Icon(
+                                                            FontAwesomeIcons
+                                                                .camera,
+                                                            color: Colors.white,
+                                                            size: 20,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        Text(
+                                                          'Take a Picture',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 14),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ])
+                                        ],
+                                      )
+                                    : Container(),
+                                SizedBox(
+                                  height: 10,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      // SizedBox(
+                      //   height: 5,
+                      // ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Weather()));
+                        },
+                        child: Card(
+                          elevation: 2,
+                          child: Container(
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        _currentAddress != null &&
+                                                _currentPosition != null
+                                            ? _currentAddress + ","
+                                            : "Loading...",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 13),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        months[current_mon - 1].toString() +
+                                            " " +
+                                            date.toString(),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 13),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        temp != null
+                                            ? temp.toString() + "\u00B0" + "C"
+                                            : "Loading...",
+                                        style: TextStyle(
+                                            fontSize: 36,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                      Image.network(
+                                          weatherIconUrl != null
+                                              ? this.weatherIconUrl
+                                              : "https://i.pinimg.com/originals/77/0b/80/770b805d5c99c7931366c2e84e88f251.png",
+                                          height: 50,
+                                          fit: BoxFit.fill
+                                          //size: 30,
+                                          ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "Sunset ",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 13,
+                                            color: Colors.blueGrey),
+                                      ),
+                                      Text(
+                                        _currentSunset != null
+                                            ? getClockInUtcPlus5Hours(
+                                                _currentSunset)
+                                            : "Loading...",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 13,
+                                            color: Colors.blueGrey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Divider(
+                                  color: Colors.blueGrey,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          10, 0, 5, 5),
+                                      child: Text(
+                                        description != null
+                                            ? description.toString()
+                                            : "Loading",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                    Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 0, 10, 10),
+                                        child: Row(children: [
+                                          Icon(FontAwesomeIcons.cloudRain,
+                                              size: 16, color: Colors.blueGrey),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(this._currentChanceOfRain != null
+                                              ? _currentChanceOfRain
+                                                      .toString() +
+                                                  '%'
+                                              : '20%')
+                                        ])),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            )),
+          ),
+
           // Container(
           //   constraints: BoxConstraints.expand(height: 50),
           //   child: TabBar(
@@ -421,675 +1154,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
           // ),
           // Expanded(child:),
-          Container(
-              height: ((2 * MediaQuery.of(context).size.height) / 3) - 80,
-              child: ListView(
-                children: [
-                  Container(
-                    margin: EdgeInsets.fromLTRB(5, 10, 5, 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Card(
-                      elevation: 2,
-                      child: Container(
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "HEAL YOUR FRUITS",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w900,
-                                      color:
-                                          // _showDiseaseDetector
-                                          //     ? primary_Color:
-                                          Colors.black,
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                      onTap: () {
-                                        setState(() => {
-                                              _showDiseaseDetector =
-                                                  !_showDiseaseDetector,
-                                            });
-                                      },
-                                      child: Icon(
-                                        _showDiseaseDetector
-                                            ? Icons.arrow_drop_up_rounded
-                                            : Icons.arrow_drop_down_rounded,
-                                        size: 35,
-                                        color:
-                                            // _showDiseaseDetector
-                                            //     ? primary_Color
-                                            //     :
-                                            Colors.black,
-                                      ))
-                                ],
-                              ),
-                            ),
-                            _showDiseaseDetector
-                                ? Column(
-                                    children: [
-                                      Container(
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                7,
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                1.25,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            // Image(
-                                            //   image: AssetImage(
-                                            //       'assets/images/home/ins.png'),
-                                            //   height: MediaQuery.of(context)
-                                            //           .size
-                                            //           .height /
-                                            //       7.5,
-                                            //   width: MediaQuery.of(context)
-                                            //           .size
-                                            //           .width /
-                                            //       1.5,
-                                            // ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(
-                                                  Icons.camera,
-                                                  size: 50,
-                                                  color: Colors.brown,
-                                                ),
-                                                SizedBox(
-                                                  height: 15,
-                                                ),
-                                                Text(
-                                                  'Take a Picture',
-                                                  style: TextStyle(
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                )
-                                              ],
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(
-                                                    Icons
-                                                        .arrow_forward_ios_rounded,
-                                                    size: 30,
-                                                    color: Colors.grey),
-                                                SizedBox(
-                                                  height: 20,
-                                                ),
-                                              ],
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(FontAwesomeIcons.mobileAlt,
-                                                    size: 50,
-                                                    color:
-                                                        Colors.lightBlueAccent),
-                                                SizedBox(
-                                                  height: 15,
-                                                ),
-                                                Text(
-                                                  'See Diagnosis',
-                                                  style: TextStyle(
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                )
-                                              ],
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(
-                                                    Icons
-                                                        .arrow_forward_ios_rounded,
-                                                    size: 30,
-                                                    color: Colors.grey),
-                                                SizedBox(
-                                                  height: 20,
-                                                ),
-                                              ],
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(
-                                                    Icons
-                                                        .medical_services_outlined,
-                                                    size: 50,
-                                                    color: Colors.redAccent),
-                                                SizedBox(
-                                                  height: 15,
-                                                ),
-                                                Text(
-                                                  'Get Medicine',
-                                                  style: TextStyle(
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                )
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            // ButtonTheme(
-                                            //   buttonColor: secondary_Color,
-                                            //   minWidth: 100,
-                                            //   child: RaisedButton(
-                                            //     shape: RoundedRectangleBorder(
-                                            //         borderRadius: BorderRadius.circular(15)),
-                                            //     onPressed: () async {
-                                            //       //Navigator.push(context, MaterialPageRoute());
-
-                                            //       final cameras = await availableCameras();
-
-                                            //       Navigator.push(
-                                            //           context,
-                                            //           MaterialPageRoute(
-                                            //               builder: (context) =>
-                                            //                   CameraScreen(cam: cameras[0])));
-                                            //     },
-                                            //     child: Row(
-                                            //       children: <Widget>[
-                                            //         Padding(
-                                            //           padding: const EdgeInsets.all(5.0),
-                                            //           child: Icon(
-                                            //             FontAwesomeIcons.camera,
-                                            //             color: Colors.white,
-                                            //           ),
-                                            //         ),
-                                            //         SizedBox(
-                                            //           width: 10,
-                                            //         ),
-                                            //         Text(
-                                            //           'CAMERA',
-                                            //           style: TextStyle(
-                                            //               color: Colors.white, fontSize: 16),
-                                            //         ),
-                                            //       ],
-                                            //     ),
-                                            //   ),
-                                            // ),
-                                            // SizedBox(
-                                            //   width: 16,
-                                            // ),
-                                            ButtonTheme(
-                                              buttonColor: primary_Color,
-                                              minWidth: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  1.3,
-                                              child: RaisedButton(
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                onPressed: () async {
-                                                  //Navigator.push(context, MaterialPageRoute());
-
-                                                  //final cameras = await availableCameras();
-
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              GalleryScreen()));
-                                                },
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              5.0),
-                                                      child: Icon(
-                                                          FontAwesomeIcons
-                                                              .camera,
-                                                          color: Colors.white,
-                                                          size: 20),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 5,
-                                                    ),
-                                                    Text(
-                                                      'Take a Picture',
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 14),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ])
-                                    ],
-                                  )
-                                : Container(),
-                            SizedBox(
-                              height: 10,
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  // SizedBox(
-                  //   height: 5.0,
-                  // ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Card(
-                      elevation: 2,
-                      child: Container(
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "GRADE YOUR FRUITS",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w900,
-                                      color:
-                                          // _showQualityGrader
-                                          //     ? primary_Color
-                                          //     :
-                                          Colors.black,
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                      onTap: () {
-                                        setState(() => {
-                                              _showQualityGrader =
-                                                  !_showQualityGrader
-                                            });
-                                      },
-                                      child: Icon(
-                                        _showQualityGrader
-                                            ? Icons.arrow_drop_up_rounded
-                                            : Icons.arrow_drop_down_rounded,
-                                        size: 35,
-                                        color:
-                                            // _showQualityGrader
-                                            //     ? primary_Color
-                                            //     :
-                                            Colors.black,
-                                      ))
-                                ],
-                              ),
-                            ),
-                            _showQualityGrader
-                                ? Column(
-                                    children: [
-                                      Container(
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                7,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Image(
-                                                  image: AssetImage(
-                                                      'assets/images/home/orange3.jpg'),
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height /
-                                                      15,
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width /
-                                                      5,
-                                                ),
-                                                SizedBox(
-                                                  height: 5,
-                                                ),
-                                                Text('A')
-                                              ],
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Image(
-                                                  image: AssetImage(
-                                                      'assets/images/home/orange2.jpg'),
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height /
-                                                      15,
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width /
-                                                      5,
-                                                ),
-                                                SizedBox(
-                                                  height: 5,
-                                                ),
-                                                Text('B')
-                                              ],
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Image(
-                                                  image: AssetImage(
-                                                      'assets/images/home/orange1.jpg'),
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height /
-                                                      15,
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width /
-                                                      5,
-                                                ),
-                                                SizedBox(
-                                                  height: 5,
-                                                ),
-                                                Text('C')
-                                              ],
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Image(
-                                                  image: AssetImage(
-                                                      'assets/images/home/orange0.jpg'),
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height /
-                                                      15,
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width /
-                                                      5,
-                                                ),
-                                                SizedBox(
-                                                  height: 5,
-                                                ),
-                                                Text('D')
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            // ButtonTheme(
-                                            //   buttonColor: secondary_Color,
-                                            //   minWidth: 100,
-                                            //   child: RaisedButton(
-                                            //     shape: RoundedRectangleBorder(
-                                            //         borderRadius: BorderRadius.circular(15)),
-                                            //     onPressed: () async {
-                                            //       //Navigator.push(context, MaterialPageRoute());
-
-                                            //       final cameras = await availableCameras();
-
-                                            //       Navigator.push(
-                                            //           context,
-                                            //           MaterialPageRoute(
-                                            //               builder: (context) =>
-                                            //                   CameraScreen(cam: cameras[0])));
-                                            //     },
-                                            //     child: Row(
-                                            //       children: <Widget>[
-                                            //         Padding(
-                                            //           padding: const EdgeInsets.all(5.0),
-                                            //           child: Icon(
-                                            //             FontAwesomeIcons.camera,
-                                            //             color: Colors.white,
-                                            //           ),
-                                            //         ),
-                                            //         SizedBox(
-                                            //           width: 10,
-                                            //         ),
-                                            //         Text(
-                                            //           'CAMERA',
-                                            //           style: TextStyle(
-                                            //               color: Colors.white, fontSize: 16),
-                                            //         ),
-                                            //       ],
-                                            //     ),
-                                            //   ),
-                                            // ),
-                                            // SizedBox(
-                                            //   width: 16,
-                                            // ),
-                                            ButtonTheme(
-                                              buttonColor: primary_Color,
-                                              minWidth: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  1.3,
-                                              child: RaisedButton(
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                onPressed: () async {
-                                                  //Navigator.push(context, MaterialPageRoute());
-
-                                                  //final cameras = await availableCameras();
-
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              GalleryScreen()));
-                                                },
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              5.0),
-                                                      child: Icon(
-                                                        FontAwesomeIcons.camera,
-                                                        color: Colors.white,
-                                                        size: 20,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 5,
-                                                    ),
-                                                    Text(
-                                                      'Take a Picture',
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 14),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ])
-                                    ],
-                                  )
-                                : Container(),
-                            SizedBox(
-                              height: 10,
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  // SizedBox(
-                  //   height: 5,
-                  // ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Weather()));
-                    },
-                    child: Card(
-                      elevation: 2,
-                      child: Container(
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    _currentAddress != null &&
-                                            _currentPosition != null
-                                        ? _currentAddress + ","
-                                        : "Loading...",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 13),
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    months[current_mon - 1].toString() +
-                                        " " +
-                                        date.toString(),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 13),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    temp != null
-                                        ? temp.toString() + "\u00B0" + "C"
-                                        : "Loading...",
-                                    style: TextStyle(
-                                        fontSize: 36,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  Image.network(
-                                      weatherIconUrl != null
-                                          ? this.weatherIconUrl
-                                          : "https://i.pinimg.com/originals/77/0b/80/770b805d5c99c7931366c2e84e88f251.png",
-                                      height: 50,
-                                      fit: BoxFit.fill
-                                      //size: 30,
-                                      ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "Sunset ",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 13,
-                                        color: Colors.blueGrey),
-                                  ),
-                                  Text(
-                                    _currentSunset != null
-                                        ? getClockInUtcPlus5Hours(
-                                            _currentSunset)
-                                        : "Loading...",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 13,
-                                        color: Colors.blueGrey),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Divider(
-                              color: Colors.blueGrey,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(10, 0, 5, 5),
-                                  child: Text(
-                                    description != null
-                                        ? description.toString()
-                                        : "Loading",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w500),
-                                  ),
-                                ),
-                                Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 0, 10, 10),
-                                    child: Row(children: [
-                                      Icon(FontAwesomeIcons.cloudRain,
-                                          size: 16, color: Colors.blueGrey),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(this._currentChanceOfRain != null
-                                          ? _currentChanceOfRain.toString() +
-                                              '%'
-                                          : '20%')
-                                    ])),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ))
         ],
       ),
     );

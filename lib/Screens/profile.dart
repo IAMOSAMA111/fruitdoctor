@@ -63,267 +63,292 @@ class _ProfileState extends State<Profile> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment
-                                  .bottomCenter, // 10% of the width, so there are ten blinds.
-                              colors: <Color>[
-                                primary_Color.withOpacity(0.9),
-                                primary_Color.withOpacity(0.9)
-                              ], // red to yellow
-                              tileMode: TileMode
-                                  .repeated, // repeats the gradient over the canvas
+                      Flexible(
+                        flex: 2,
+                        child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment
+                                    .bottomCenter, // 10% of the width, so there are ten blinds.
+                                colors: <Color>[
+                                  primary_Color.withOpacity(0.9),
+                                  primary_Color.withOpacity(0.9)
+                                ], // red to yellow
+                                tileMode: TileMode
+                                    .repeated, // repeats the gradient over the canvas
+                              ),
                             ),
-                          ),
-                          padding: EdgeInsets.all(10),
-                          //color: primary_Color.withOpacity(0.9),
-                          height: MediaQuery.of(context).size.height / 3.3,
-                          width: MediaQuery.of(context).size.width,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              FutureBuilder(
-                                future: getUserCred(choice: 3),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<dynamic> snapshot) {
-                                  if (snapshot.hasData &&
-                                      snapshot.data != null &&
-                                      snapshot.data != '') {
-                                    return Padding(
-                                        padding: EdgeInsets.only(top: 30),
-                                        child: CircleAvatar(
-                                          radius: 50,
-                                          backgroundColor: Colors.white,
-                                          backgroundImage: NetworkImage(
-                                            snapshot.data,
-                                          ),
-                                        ));
-                                  } else {
-                                    return Padding(
-                                        padding: EdgeInsets.only(top: 30),
-                                        child: CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          radius: 50,
-                                          child: SvgPicture.asset(
-                                              'assets/images/farmer-avatar.svg',
-                                              height: 100,
-                                              width: 100),
-                                        ));
-                                  }
-                                },
-                              ),
-                              SizedBox(height: 20),
-                              FutureBuilder(
-                                future: getUserCred(choice: 1),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<dynamic> snapshot) {
-                                  if (snapshot.hasData) {
-                                    return Text(
-                                        /*auth.a.isLoggedIn
+                            padding: EdgeInsets.all(10),
+                            //color: primary_Color.withOpacity(0.9),
+                            //height: MediaQuery.of(context).size.height / 3.3,
+                            width: MediaQuery.of(context).size.width,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                FutureBuilder(
+                                  future: getUserCred(choice: 3),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<dynamic> snapshot) {
+                                    if (snapshot.hasData &&
+                                        snapshot.data != null &&
+                                        snapshot.data != '') {
+                                      return Padding(
+                                          padding: EdgeInsets.only(top: 30),
+                                          child: CircleAvatar(
+                                            radius: 50,
+                                            backgroundColor: Colors.white,
+                                            backgroundImage: NetworkImage(
+                                              snapshot.data,
+                                            ),
+                                          ));
+                                    } else {
+                                      return Padding(
+                                          padding: EdgeInsets.only(top: 30),
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            radius: 40,
+                                            child: SvgPicture.asset(
+                                                'assets/images/farmer-avatar.svg',
+                                                height: 80,
+                                                width: 80),
+                                          ));
+                                    }
+                                  },
+                                ),
+                                SizedBox(height: 20),
+                                FutureBuilder(
+                                  future: getUserCred(choice: 1),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<dynamic> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                          /*auth.a.isLoggedIn
                               ? auth.a.userProfile[auth.E.username.index]
                               : 'Anonymous',*/
-                                        snapshot.data,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 24,
-                                            color: Colors.white));
-                                  } else {
-                                    return CircularProgressIndicator();
-                                  }
-                                },
-                              ),
-                              SizedBox(height: 5),
-                              FutureBuilder(
-                                future: getUserCred(choice: 2),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<dynamic> snapshot) {
-                                  if (snapshot.hasData) {
-                                    return Text(
-                                        /*auth.a.isLoggedIn
+                                          snapshot.data,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 24,
+                                              color: Colors.white));
+                                    } else {
+                                      return CircularProgressIndicator();
+                                    }
+                                  },
+                                ),
+                                SizedBox(height: 5),
+                                FutureBuilder(
+                                  future: getUserCred(choice: 2),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<dynamic> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                          /*auth.a.isLoggedIn
                               ? auth.a.userProfile[auth.E.username.index]
                               : 'Anonymous',*/
-                                        snapshot.data,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 14,
-                                            color: Colors.white));
-                                  } else {
-                                    return CircularProgressIndicator();
-                                  }
-                                },
-                              ),
-                              SizedBox(height: 10)
-                            ],
-                          )),
+                                          snapshot.data,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 14,
+                                              color: Colors.white));
+                                    } else {
+                                      return CircularProgressIndicator();
+                                    }
+                                  },
+                                ),
+                                SizedBox(height: 10)
+                              ],
+                            )),
+                      ),
+
                       // Divider(
                       //   color: Colors.grey[700],
                       //   height: MediaQuery.of(context).size.height / 25,
                       // ),
-                      SizedBox(
-                        height: 5,
+                      Flexible(
+                        flex: 3,
+                        child: ListView(
+                          children: [
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(20, 20, 0, 10),
+                                child: Text(
+                                  'My Data',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                )),
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                child: Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            PageTransition(
+                                              type: PageTransitionType
+                                                  .rightToLeft,
+                                              child: NoteHome(),
+                                            ));
+                                      },
+                                      child: Card(
+                                        color: Colors.white,
+                                        elevation: 1, //Colors.blue[300],
+                                        child: Row(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 20),
+                                              child: FaIcon(
+                                                FontAwesomeIcons.book,
+                                                color: Colors.blueGrey,
+                                                size: 18,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 30,
+                                                  top: 15,
+                                                  bottom: 15),
+                                              child: Text("Notes",
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w500)),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            PageTransition(
+                                              type: PageTransitionType
+                                                  .rightToLeft,
+                                              child: TodoListScreen(),
+                                            ));
+                                      },
+                                      child: Card(
+                                        color: Colors.white,
+                                        child: Row(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 20),
+                                              child: FaIcon(
+                                                FontAwesomeIcons.solidListAlt,
+                                                color: Colors.blueGrey,
+                                                size: 18,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 30,
+                                                  top: 15,
+                                                  bottom: 15),
+                                              child: Text("To do",
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w500)),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(20, 20, 0, 10),
+                                child: Text(
+                                  'General',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                )),
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                child: Column(children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          PageTransition(
+                                            type:
+                                                PageTransitionType.rightToLeft,
+                                            child: TodoListScreen(),
+                                          ));
+                                    },
+                                    child: Card(
+                                      color: Colors.white,
+                                      child: Row(
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 20),
+                                            child: FaIcon(
+                                              FontAwesomeIcons.userAlt,
+                                              color: Colors.blueGrey,
+                                              size: 18,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 30, top: 15, bottom: 15),
+                                            child: Text("Personal Profile",
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.w500)),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          PageTransition(
+                                            type:
+                                                PageTransitionType.rightToLeft,
+                                            child: TodoListScreen(),
+                                          ));
+                                    },
+                                    child: Card(
+                                      color: Colors.white,
+                                      child: Row(
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 15),
+                                            child: FaIcon(
+                                              FontAwesomeIcons.users,
+                                              color: Colors.blueGrey,
+                                              size: 18,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 30, top: 15, bottom: 15),
+                                            child: Text("Community Profile",
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.w500)),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ])),
+                          ],
+                        ),
                       ),
-
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(20, 20, 0, 10),
-                          child: Text(
-                            'My Data',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          )),
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          child: Column(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
-                                        type: PageTransitionType.rightToLeft,
-                                        child: NoteHome(),
-                                      ));
-                                },
-                                child: Card(
-                                  color: Colors.white,
-                                  elevation: 1, //Colors.blue[300],
-                                  child: Row(
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 20),
-                                        child: FaIcon(
-                                          FontAwesomeIcons.book,
-                                          color: Colors.blueGrey,
-                                          size: 18,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 30, top: 15, bottom: 15),
-                                        child: Text("Notes",
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w500)),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
-                                        type: PageTransitionType.rightToLeft,
-                                        child: TodoListScreen(),
-                                      ));
-                                },
-                                child: Card(
-                                  color: Colors.white,
-                                  child: Row(
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 20),
-                                        child: FaIcon(
-                                          FontAwesomeIcons.solidListAlt,
-                                          color: Colors.blueGrey,
-                                          size: 18,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 30, top: 15, bottom: 15),
-                                        child: Text("To do",
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w500)),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )),
-
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(20, 20, 0, 10),
-                          child: Text(
-                            'General',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          )),
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          child: Column(children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    PageTransition(
-                                      type: PageTransitionType.rightToLeft,
-                                      child: TodoListScreen(),
-                                    ));
-                              },
-                              child: Card(
-                                color: Colors.white,
-                                child: Row(
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 20),
-                                      child: FaIcon(
-                                        FontAwesomeIcons.userAlt,
-                                        color: Colors.blueGrey,
-                                        size: 18,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 30, top: 15, bottom: 15),
-                                      child: Text("Personal Profile",
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w500)),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    PageTransition(
-                                      type: PageTransitionType.rightToLeft,
-                                      child: TodoListScreen(),
-                                    ));
-                              },
-                              child: Card(
-                                color: Colors.white,
-                                child: Row(
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 15),
-                                      child: FaIcon(
-                                        FontAwesomeIcons.users,
-                                        color: Colors.blueGrey,
-                                        size: 18,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 30, top: 15, bottom: 15),
-                                      child: Text("Community Profile",
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w500)),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ])),
                     ]))));
   }
 }
