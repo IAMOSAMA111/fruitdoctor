@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ModelResults with ChangeNotifier {
-  String result = ".";
+  String result = "Prediction";
 
   resultsFetch(String res) {
     result = res;
