@@ -24,6 +24,7 @@ class GalleryScreen extends StatefulWidget {
 class _GalleryScreenState extends State<GalleryScreen> {
   File _image;
   String endpoint;
+  String status = "Prediction";
   _GalleryScreenState(this.endpoint);
   _imgFromCamera() async {
     File image = await ImagePicker.pickImage(
@@ -78,14 +79,29 @@ class _GalleryScreenState extends State<GalleryScreen> {
   }
 
   int touchedIndex = 0;
+
   // List<double> percentages = [15, 40, 30, 10, 5];
-  // List<String> diseases = [
-  //   "Anthracnose",
-  //   "Powdery Mildew",
-  //   "Ring Spot",
-  //   "Black Spot",
-  //   "Healthy"
-  // ];
+  List<String> papayaDiseases = [
+    "Anthracnose",
+    "Black Spot",
+    'Phytophthora',
+    "Powdery Mildew",
+    "Ring Spot"
+  ];
+  List<String> cornDiseases = [
+    "Grey Leaf Spot",
+    "Common Rust",
+    "Northern Leaf Blight",
+    "Healthy"
+  ];
+  List<String> appleDiseases = [
+    "Apple Scab",
+    "Black Rot",
+    "Cedar Apple Rust",
+    "Healthy"
+  ];
+  List<String> strawberryDiseases = ["Leaf Scrotch", "Healthy"];
+
   List<double> percentages = [100];
   List<String> diseases = ['None'];
   List<Color> doughnutColors = [
@@ -128,7 +144,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                             child: Image.file(
                               _image,
                               width: MediaQuery.of(context).size.width - 70,
-                              height: MediaQuery.of(context).size.width - 200,
+                              height: MediaQuery.of(context).size.width - 300,
                               fit: BoxFit.fitHeight,
                             ),
                           )
@@ -155,8 +171,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     child: Text('Send to Server'),
                     onPressed: () async {
                       Dio dio = new Dio();
-                      Provider.of<ModelResults>(context, listen: false)
-                          .resultsFetch("Loading");
+                      setState(() {
+                        status = "loading";
+                      });
                       var address = 'http://10.0.2.2:5000/$endpoint';
 //192.168.0.105
                       debugPrint('here');
@@ -186,25 +203,43 @@ class _GalleryScreenState extends State<GalleryScreen> {
                             filename: img_file)
                       });
                       Response<String> res = await dio.post(address, data: dt);
-                      var js = res.data.toString();
+                      var js = jsonDecode(res.data);
+                      print(js);
 
-                      //   this.setState(() {
-                      //   percentages = [15, 40, 30, 10, 5];
-                      //   diseases = [
-                      //     "Anthracnose",
-                      //     "Powdery Mildew",
-                      //     "Ring Spot",
-                      //     "Black Spot",
-                      //     "Healthy"
-                      //   ];
-                      //   touchedIndex = 1;
-                      // });
+                      this.setState(() {
+                        if (endpoint == "predictPapayaDisease")
+                          diseases = papayaDiseases;
+                        else if (endpoint == "predictAppleDisease")
+                          diseases = appleDiseases;
+                        else if (endpoint == "predictCornDisease")
+                          diseases = cornDiseases;
+                        else if (endpoint == "predictStrawberryDisease")
+                          diseases = strawberryDiseases;
+                        percentages = new List<double>(diseases.length);
 
-                      var final_res = convJsonToRes(jsonDecode(js));
+                        for (var i = 0; i < diseases.length; i++) {
+                          percentages[i] = double.parse(js[i.toString()]) * 100;
+                        }
+                      });
 
-                      Provider.of<ModelResults>(context, listen: false)
-                          .resultsFetch(final_res);
-                      debugPrint(final_res);
+                      var maxIndex = 0;
+                      double maxvalue = 0;
+                      for (var i = 0; i < diseases.length; i++) {
+                        if (percentages[i] > maxvalue) {
+                          maxIndex = i;
+                          maxvalue = percentages[i];
+                        }
+                      }
+                      print(maxIndex);
+                      setState(() {
+                        touchedIndex = maxIndex;
+                      });
+
+                      //
+
+                      setState(() {
+                        status = diseases[maxIndex].toString();
+                      });
                     },
                   );
                 }),
@@ -212,7 +247,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
               Consumer<ModelResults>(builder: (_, myResults, child) {
                 return Padding(
                   padding: const EdgeInsets.only(top: 15),
-                  child: Text(myResults.result,
+                  child: Text(status,
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -353,7 +388,3 @@ class _GalleryScreenState extends State<GalleryScreen> {
 //     );
 //   }
 // }
-
-convJsonToRes(Map<String, dynamic> js) {
-  return js['name'].toString();
-}
