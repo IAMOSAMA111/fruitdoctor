@@ -101,9 +101,21 @@ class _GalleryScreenState extends State<GalleryScreen> {
     "Healthy"
   ];
   List<String> strawberryDiseases = ["Leaf Scrotch", "Healthy"];
+  List<String> appleGrades = [
+    'Apple Green',
+    'Apple Red G1',
+    'Apple Red G2',
+    'Apple Yellow'
+  ];
+  List<String> bananaGrades = [
+    'Banana Yellow',
+    'Banana Green',
+    'Rotten Banana'
+  ];
+  List<String> orangeGrades = ['Orange G1', 'Orange G2', 'Rotten orange'];
 
   List<double> percentages = [100];
-  List<String> diseases = ['None'];
+  List<String> classes = ['None'];
   List<Color> doughnutColors = [
     const Color(0xff0293ee),
     const Color(0xfff8b250),
@@ -115,7 +127,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
   getList() {
     return Column(
       children: [
-        for (var i in diseases) Text('this'),
+        for (var i in classes) Text('this'),
       ],
     );
   }
@@ -171,19 +183,20 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     child: Text('Send to Server'),
                     onPressed: () async {
                       Dio dio = new Dio();
-                      setState(() {
-                        status = "loading";
-                      });
+
                       var address = 'http://10.0.2.2:5000/$endpoint';
 //192.168.0.105
                       debugPrint('here');
-
-                      dynamic img_file = _image.path.split('/').last;
-
-                      ////The other way to do it
-                      FormData formdata;
-                      var imageName;
                       if (_image != null) {
+                        dynamic img_file = _image.path.split('/').last;
+
+                        ////The other way to do it
+                        FormData formdata;
+                        var imageName;
+
+                        setState(() {
+                          status = "loading";
+                        });
                         imageName = _image.path.split('/').last;
                         final mimeTypeData = lookupMimeType(_image.path,
                             headerBytes: [0xFF, 0xD8]).split('/');
@@ -195,51 +208,65 @@ class _GalleryScreenState extends State<GalleryScreen> {
                               contentType: new MediaType(
                                   mimeTypeData[0], mimeTypeData[1])),
                         ));
-                      }
-                      ////
 
-                      FormData dt = FormData.fromMap({
-                        "img": await MultipartFile.fromFile(_image.path,
-                            filename: img_file)
-                      });
-                      Response<String> res = await dio.post(address, data: dt);
-                      var js = jsonDecode(res.data);
-                      print(js);
+                        ////
 
-                      this.setState(() {
-                        if (endpoint == "predictPapayaDisease")
-                          diseases = papayaDiseases;
-                        else if (endpoint == "predictAppleDisease")
-                          diseases = appleDiseases;
-                        else if (endpoint == "predictCornDisease")
-                          diseases = cornDiseases;
-                        else if (endpoint == "predictStrawberryDisease")
-                          diseases = strawberryDiseases;
-                        percentages = new List<double>(diseases.length);
+                        FormData dt = FormData.fromMap({
+                          "img": await MultipartFile.fromFile(_image.path,
+                              filename: img_file)
+                        });
 
-                        for (var i = 0; i < diseases.length; i++) {
-                          percentages[i] = double.parse(js[i.toString()]) * 100;
+                        Response<String> res =
+                            await dio.post(address, data: dt);
+                        var js = jsonDecode(res.data);
+                        print(js);
+
+                        this.setState(() {
+                          if (endpoint == "predictPapayaDisease")
+                            classes = papayaDiseases;
+                          else if (endpoint == "predictAppleDisease")
+                            classes = appleDiseases;
+                          else if (endpoint == "predictCornDisease")
+                            classes = cornDiseases;
+                          else if (endpoint == "predictStrawberryDisease")
+                            classes = strawberryDiseases;
+                          else if (endpoint == "gradeApple")
+                            classes = appleGrades;
+                          else if (endpoint == "gradeBanana")
+                            classes = bananaGrades;
+                          else if (endpoint == "gradeOrange")
+                            classes = orangeGrades;
+                          percentages = new List<double>(classes.length);
+
+                          for (var i = 0; i < classes.length; i++) {
+                            percentages[i] =
+                                double.parse(js[i.toString()]) * 100;
+                          }
+                        });
+
+                        var maxIndex = 0;
+                        double maxvalue = 0;
+                        for (var i = 0; i < classes.length; i++) {
+                          if (percentages[i] > maxvalue) {
+                            maxIndex = i;
+                            maxvalue = percentages[i];
+                          }
                         }
-                      });
+                        print(maxIndex);
+                        setState(() {
+                          touchedIndex = maxIndex;
+                        });
 
-                      var maxIndex = 0;
-                      double maxvalue = 0;
-                      for (var i = 0; i < diseases.length; i++) {
-                        if (percentages[i] > maxvalue) {
-                          maxIndex = i;
-                          maxvalue = percentages[i];
-                        }
+                        //
+
+                        setState(() {
+                          status = classes[maxIndex].toString();
+                        });
+                      } else {
+                        setState(() {
+                          status = "Select an image";
+                        });
                       }
-                      print(maxIndex);
-                      setState(() {
-                        touchedIndex = maxIndex;
-                      });
-
-                      //
-
-                      setState(() {
-                        status = diseases[maxIndex].toString();
-                      });
                     },
                   );
                 }),
@@ -296,12 +323,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            for (var i = 0; i < diseases.length; i++)
+                            for (var i = 0; i < classes.length; i++)
                               Indicator(
                                 color: doughnutColors[i],
-                                text: diseases[i],
+                                text: classes[i],
                                 isSquare: true,
-                                isLast: i == diseases.length - 1 ? true : false,
+                                isLast: i == classes.length - 1 ? true : false,
                               ),
                           ]),
                       const SizedBox(
@@ -319,7 +346,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
   updateLists() {}
 
   List<PieChartSectionData> showingSections() {
-    return List.generate(diseases.length, (i) {
+    return List.generate(classes.length, (i) {
       final isTouched = i == touchedIndex;
       final fontSize = isTouched ? 20.0 : 16.0;
       final radius = isTouched ? 80.0 : 70.0;
