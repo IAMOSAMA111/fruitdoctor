@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_doctor/Provider/modelResult.dart';
+import 'package:flutter_doctor/Screens/detectedDiseases.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:flutter_doctor/utilities/constants.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -16,16 +18,23 @@ import 'package:flutter_doctor/Widget/indicator.dart';
 
 class GalleryScreen extends StatefulWidget {
   String endpoint;
-  GalleryScreen(this.endpoint);
+  String fruit;
+  String purpose;
+  GalleryScreen(this.endpoint, this.fruit, this.purpose);
   @override
-  _GalleryScreenState createState() => _GalleryScreenState(endpoint);
+  _GalleryScreenState createState() =>
+      _GalleryScreenState(endpoint, fruit, purpose);
 }
 
 class _GalleryScreenState extends State<GalleryScreen> {
   File _image;
   String endpoint;
+  String fruit;
+  String purpose;
   String status = "Prediction";
-  _GalleryScreenState(this.endpoint);
+  int noOfDetectedDisease = 0;
+  List<String> detectedDiseases;
+  _GalleryScreenState(this.endpoint, this.fruit, this.purpose);
   _imgFromCamera() async {
     File image = await ImagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 50);
@@ -84,7 +93,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
   List<String> papayaDiseases = [
     "Anthracnose",
     "Black Spot",
-    'Phytophthora',
+    'Phythophthora',
     "Powdery Mildew",
     "Ring Spot"
   ];
@@ -132,6 +141,11 @@ class _GalleryScreenState extends State<GalleryScreen> {
             children: <Widget>[
               SizedBox(height: 5),
               Center(
+                  child: Container(
+                width: MediaQuery.of(context).size.width / 2,
+                height: MediaQuery.of(context).size.width / 3,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(10)),
                 child: GestureDetector(
                   onTap: () {
                     _showPicker(context);
@@ -150,18 +164,18 @@ class _GalleryScreenState extends State<GalleryScreen> {
                           )
                         : Container(
                             decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(50)),
+                                color: primary_Color.withOpacity(0.7),
+                                borderRadius: BorderRadius.circular(10)),
                             width: 100,
                             height: 100,
                             child: Icon(
                               Icons.camera_alt,
-                              color: Colors.grey[800],
+                              color: Colors.white,
                             ),
                           ),
                   ),
                 ),
-              ),
+              )),
               SizedBox(
                 height: 20,
               ),
@@ -310,7 +324,18 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     ],
                   ),
                 ),
-              )
+              ),
+              RaisedButton(
+                  child: Text('Get Cure'),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: DetectedDiseasesScreen(
+                              percentages, papayaDiseases, fruit, _image),
+                        ));
+                  })
             ],
           ),
         ));

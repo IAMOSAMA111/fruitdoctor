@@ -56,6 +56,7 @@ dependencies:
   page_transition:
   pie_chart:
   fl_chart: 
+  #youtube_player_flutter: ^8.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -89,6 +90,8 @@ flutter:
     - assets/images/home/orange3.jpg
     - assets/images/home/corn.png
     - assets/images/farmer-avatar.svg
+    - assets/images/rank3.png
+    - assets/images/rating.png
 
 
 

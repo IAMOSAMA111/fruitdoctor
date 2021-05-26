@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter_doctor/Screens/calculate_fertilizer.dart';
+import 'package:flutter_doctor/Screens/pestsAndDiseases.dart';
 import 'package:flutter_doctor/Screens/camera_screen.dart';
 import 'package:flutter_doctor/Screens/gallery_screen.dart';
 import 'package:flutter_doctor/Screens/todoist.dart';
@@ -211,6 +212,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    diseases = appleDiseases;
     _getCurrentLocation();
     this.getWeatherInfo();
 
@@ -222,7 +224,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _controller.addListener(() {
       setState(() {
         _selectedIndex = _controller.index;
+        if (_fruits[_selectedIndex] == 'apple')
+          diseases = appleDiseases;
+        else if (_fruits[_selectedIndex] == 'citrus')
+          diseases = citrusDiseases;
+        else if (_fruits[_selectedIndex] == 'banana')
+          diseases = bananaDiseases;
+        else if (_fruits[_selectedIndex] == 'papaya')
+          diseases = papayaDiseases;
+        else if (_fruits[_selectedIndex] == 'strawberry')
+          diseases = strawberryDiseases;
+        else if (_fruits[_selectedIndex] == 'corn') diseases = cornDiseases;
       });
+
       print("Selected Index: " + _controller.index.toString());
     });
   }
@@ -307,6 +321,23 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     'November',
     'December'
   ];
+  List<String> papayaDiseases = [
+    "Anthracnose",
+    "Black Spot",
+    'Phythophthora',
+    "Powdery Mildew",
+    "Ring Spot"
+  ];
+  List<String> cornDiseases = [
+    "Grey Leaf Spot",
+    "Common Rust",
+    "Northern Leaf Blight"
+  ];
+  List<String> appleDiseases = ["Apple Scab", "Black Rot", "Cedar Apple Rust"];
+  List<String> strawberryDiseases = ["Leaf Scrotch"];
+  List<String> bananaDiseases = ["Anthracnose", "Black Sigatoka"];
+  List<String> citrusDiseases = ["Anthracnose", "Brown Rot", "Citrus Canker"];
+  List<String> diseases;
   var current_mon = now.month;
   var date = now.day;
   var time = now.hour;
@@ -338,6 +369,18 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         onTap: (index) {
                           this.setState(() {
                             _selectedIndex = index;
+                            if (_fruits[_selectedIndex] == 'apple')
+                              diseases = appleDiseases;
+                            else if (_fruits[_selectedIndex] == 'citrus')
+                              diseases = citrusDiseases;
+                            else if (_fruits[_selectedIndex] == 'banana')
+                              diseases = bananaDiseases;
+                            else if (_fruits[_selectedIndex] == 'papaya')
+                              diseases = papayaDiseases;
+                            else if (_fruits[_selectedIndex] == 'strawberry')
+                              diseases = strawberryDiseases;
+                            else if (_fruits[_selectedIndex] == 'corn')
+                              diseases = cornDiseases;
                           });
                         },
                         indicator: BoxDecoration(
@@ -364,42 +407,48 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               CalculateFertilizer(
                                 fruit: fruit1,
                               ),
-                              Grading()),
+                              PestsAndDiseasesScreen(
+                                  _fruits[_selectedIndex], diseases)),
                           homeTop(
                               context,
                               colors[1],
                               CalculateFertilizer(
                                 fruit: fruit2,
                               ),
-                              Todoist()),
+                              PestsAndDiseasesScreen(
+                                  _fruits[_selectedIndex], diseases)),
                           homeTop(
                               context,
                               colors[2],
                               CalculateFertilizer(
                                 fruit: fruit3,
                               ),
-                              Todoist()),
+                              PestsAndDiseasesScreen(
+                                  _fruits[_selectedIndex], diseases)),
                           homeTop(
                               context,
                               colors[3],
                               CalculateFertilizer(
                                 fruit: fruit4,
                               ),
-                              Todoist()),
+                              PestsAndDiseasesScreen(
+                                  _fruits[_selectedIndex], diseases)),
                           homeTop(
                               context,
                               colors[4],
                               CalculateFertilizer(
                                 fruit: fruit4,
                               ),
-                              Todoist()),
+                              PestsAndDiseasesScreen(
+                                  _fruits[_selectedIndex], diseases)),
                           homeTop(
                               context,
                               colors[5],
                               CalculateFertilizer(
                                 fruit: fruit4,
                               ),
-                              Todoist()),
+                              PestsAndDiseasesScreen(
+                                  _fruits[_selectedIndex], diseases)),
                         ]),
                       ),
                     )
@@ -657,10 +706,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                                       Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  GalleryScreen(
-                                                                      _diseaseEndpoints[
-                                                                          _selectedIndex])));
+                                                              builder: (context) => GalleryScreen(
+                                                                  _diseaseEndpoints[
+                                                                      _selectedIndex],
+                                                                  _fruits[
+                                                                      _selectedIndex],
+                                                                  "Diagnose")));
                                                     },
                                                     child: Row(
                                                       mainAxisAlignment:
@@ -937,7 +988,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                                           MaterialPageRoute(
                                                               builder: (context) =>
                                                                   GalleryScreen(
-                                                                      "grading_model")));
+                                                                      "grading_model",
+                                                                      _fruits[
+                                                                          _selectedIndex],
+                                                                      "Find Grade")));
                                                     },
                                                     child: Row(
                                                       mainAxisAlignment:

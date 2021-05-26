@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_doctor/Model/note.dart';
 import 'package:flutter_doctor/Provider/home_provider.dart';
+import 'package:flutter_doctor/Screens/completeProfile.dart';
 import 'package:flutter_doctor/Screens/scraper.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -33,6 +34,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
   String name;
   String email;
   String picUrl;
+  int rating;
+  String rank;
   bool loggingOut = false;
 
   final _pageOption = [
@@ -116,9 +119,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
               ),
               Divider(),
               ListTile(
-                title: Text('Personal Profile'),
+                title: Text('Fruit Doctor Profile'),
                 leading: Icon(
-                  FontAwesomeIcons.userAlt,
+                  FontAwesomeIcons.solidIdBadge,
                   size: 20,
                 ),
                 onTap: () {
@@ -126,22 +129,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                       context,
                       PageTransition(
                         type: PageTransitionType.rightToLeft,
-                        child: TodoListScreen(),
-                      ));
-                },
-              ),
-              ListTile(
-                title: Text('Community Profile'),
-                leading: Icon(
-                  FontAwesomeIcons.users,
-                  size: 20,
-                ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        child: TodoListScreen(),
+                        child: CompleteProfileScreen(name, email, picUrl),
                       ));
                 },
               ),
