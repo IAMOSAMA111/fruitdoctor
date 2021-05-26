@@ -51,6 +51,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     "predictAppleDisease",
     "predictPapayaDisease"
   ];
+  List<String> _gradingEndpoints = [
+    "gradeApple",
+    "gradeBanana",
+    "gradeApple",
+    "gradeApple",
+    "gradeOrange",
+    "gradeApple"
+  ];
   List<Widget> list = [
     Tab(
       child: Row(
@@ -988,10 +996,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                                           MaterialPageRoute(
                                                               builder: (context) =>
                                                                   GalleryScreen(
-                                                                      "grading_model",
-                                                                      _fruits[
-                                                                          _selectedIndex],
-                                                                      "Find Grade")));
+                                                                      _gradingEndpoints[
+                                                                          _selectedIndex])));
                                                     },
                                                     child: Row(
                                                       mainAxisAlignment:
