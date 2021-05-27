@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_doctor/Screens/query_and_replies.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_doctor/Screens/loader.dart';
 import 'package:flutter_doctor/utilities/constants.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:select_dialog/select_dialog.dart';
 //import 'package:image_picker/image_picker.dart';
@@ -25,8 +27,11 @@ class User {
   String id;
   String name;
   String email;
+  String pictureUrl;
+  int rating;
+  String rank;
 
-  User(this.id, this.name, this.email);
+  User(this.id, this.name, this.email, this.pictureUrl, this.rating, this.rank);
 }
 
 class Reply {
@@ -35,8 +40,10 @@ class Reply {
   int rating;
   User author;
   String postDate;
+  List<User> likers;
 
-  Reply(this.id, this.replyText, this.rating, this.author, this.postDate);
+  Reply(this.id, this.replyText, this.rating, this.author, this.postDate,
+      this.likers);
 }
 
 class Query {
@@ -49,9 +56,10 @@ class Query {
   String subject;
   String query;
   List<Reply> replies;
+  List<User> likers;
 
   Query(this.id, this.imageURL, this.author, this.authorImage, this.postDate,
-      this.relatedFruit, this.subject, this.query, this.replies);
+      this.relatedFruit, this.subject, this.query, this.replies, this.likers);
 }
 
 class Community extends StatefulWidget {
@@ -60,17 +68,22 @@ class Community extends StatefulWidget {
   _CommunityState createState() => _CommunityState();
 }
 
-class _CommunityState extends State<Community> {
+class _CommunityState extends State<Community>
+    with SingleTickerProviderStateMixin {
   bool isLoading = false;
   bool queriesLoading = true;
   var queries;
   var totalQueries = 0;
   bool postingQuery = false;
+  String currentUserEmail;
 
   _CommunityState() {
     initState() async {}
   }
+
   Future<List<Query>> fetchQueries() async {
+    SharedPreferences sharedPref = await SharedPreferences.getInstance();
+    currentUserEmail = sharedPref.get('email');
     List<Query> queriesList = [];
 
     await forum.getQueries().then((queryArray) {
@@ -79,22 +92,45 @@ class _CommunityState extends State<Community> {
 
       for (var u in jsonData) {
         List<Reply> replies = [];
-
+        List<User> likers = [];
         //Adding the user credentials who uploaded the post
-        User user =
-            User(u['author']['_id'], u['author']['name'], u['author']['email']);
+        User user = User(
+            u['author']['_id'],
+            u['author']['name'],
+            u['author']['email'],
+            u['author']['pictureUrl'],
+            u['author']['rating'],
+            u['author']['rank']);
 
         //adding replies in each post
         var jsonData2 = u['replies'];
         for (var v in jsonData2) {
+          List<User> replyLikers = [];
           //adding user credentials for each reply
           User user2 = User(
-              v['author']['_id'], v['author']['name'], v['author']['email']);
+              v['author']['_id'],
+              v['author']['name'],
+              v['author']['email'],
+              v['author']['pictureUrl'],
+              v['author']['rating'],
+              v['author']['rank']);
+          var jsonData4 = v['likers'];
+          for (var w in jsonData4) {
+            User user = User(w['_id'], w['name'], w['email'], w['pictureUrl'],
+                w['rating'], w['rank']);
+            replyLikers.add(user);
+          }
 
-          Reply reply = Reply(
-              v['_id'], v['replyText'], v['ratings'], user2, v['postDate']);
+          Reply reply = Reply(v['_id'], v['replyText'], v['ratings'], user2,
+              v['postDate'], replyLikers);
 
           replies.add(reply);
+        }
+        var jsonData3 = u['likers'];
+        for (var w in jsonData3) {
+          User user = User(w['_id'], w['name'], w['email'], w['pictureUrl'],
+              w['rating'], w['rank']);
+          likers.add(user);
         }
 
         Query query = Query(
@@ -106,9 +142,23 @@ class _CommunityState extends State<Community> {
             u['relatedFruit'],
             u['subject'],
             u['query'],
-            replies);
+            replies,
+            likers);
 
-        queriesList.add(query);
+        bool matchesFilter = false;
+        bool filterSelected = false;
+        if (selectedFilterTags.length != 1) {
+          filterSelected = true;
+          for (var i in selectedFilterTags) {
+            if (i != "Popular" && i == query.relatedFruit) {
+              matchesFilter = true;
+            }
+          }
+        }
+
+        if ((filterSelected && matchesFilter) || !filterSelected) {
+          queriesList.add(query);
+        }
       }
       queriesLoading = false;
       totalQueries = queriesList.length;
@@ -123,10 +173,9 @@ class _CommunityState extends State<Community> {
     'Apple',
     'Banana',
     'Citrus',
-    'Mango',
-    'Pine Apple',
-    'Strawberry',
-    'Recent'
+    'corn',
+    'Papaya',
+    'Strawberry'
   ];
   List<String> selectedFilterTags = ['Popular'];
 
@@ -136,19 +185,21 @@ class _CommunityState extends State<Community> {
     'Apple',
     'Banana',
     'Citrus',
-    'Mango',
-    'Pine Apple',
+    'corn',
+    'Papaya',
     'Strawberry'
   ];
-  String queryFruit = 'Query Fruit';
+  String queryFruit = 'Apple';
   final List<Map<String, dynamic>> _items = [
     {'label': 'Apple'},
     {'label': 'Banana'},
     {'label': 'Citrus'},
-    {'label': 'Mango'},
-    {'label': 'Pine Apple'},
+    {'label': 'corn'},
+    {'label': 'Papaya'},
     {'label': 'Strawberry'},
   ];
+
+  String upvoteText = "Upvoted", downvoteText = "Downvoted";
 
   io.File _image;
   bool picLoading = false;
@@ -172,6 +223,105 @@ class _CommunityState extends State<Community> {
         picLoading = false;
       });
     });
+  }
+
+  _showUserModal(context, User author) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              child: contentBox(context, author),
+            );
+          });
+        });
+  }
+
+  contentBox(context, User author) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          padding:
+              EdgeInsets.only(left: 50, top: 30.0 + 10, right: 50, bottom: 20),
+          margin: EdgeInsets.only(top: 50),
+          decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black, offset: Offset(0, 10), blurRadius: 10),
+              ]),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(author.name,
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: primary_Color)),
+              SizedBox(
+                height: 2,
+              ),
+              Text(
+                author.email,
+                style: TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Icon(FontAwesomeIcons.trophy,
+                  size: 60, color: Colors.orangeAccent),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                "  " + author.rank,
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orangeAccent),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                " " + author.rating.toString() + " PTS",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 30,
+          right: 30,
+          top: 0,
+          child: Container(
+              height: 80,
+              width: 80,
+              child: CircleAvatar(
+                backgroundColor: Colors.transparent,
+                radius: 40,
+                child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(40)),
+                    child: Image.network(
+                      author.pictureUrl,
+                      height: 80,
+                      width: 80,
+                    )),
+              )),
+        ),
+      ],
+    );
   }
 
   _showPicker(context) {
@@ -271,6 +421,7 @@ class _CommunityState extends State<Community> {
                                                   setState(() {
                                                     selectedFilterTags =
                                                         selected;
+                                                    print(selectedFilterTags);
                                                   });
                                                 },
                                               )
@@ -307,8 +458,11 @@ class _CommunityState extends State<Community> {
                         //scrollDirection: Axis.vertical,
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
-                          return Post(context, Colors.white,
-                              snapshot.data[snapshot.data.length - index - 1]);
+                          return Post(
+                              context,
+                              Colors.white,
+                              snapshot.data[snapshot.data.length - index - 1],
+                              currentUserEmail);
                         });
                   } else {
                     return Center(
@@ -542,39 +696,56 @@ class _CommunityState extends State<Community> {
                                                 await SharedPreferences
                                                     .getInstance();
                                             var email = sharedPref.get('email');
-
-                                            forum
-                                                .postQuery(_subject, _query,
-                                                    email, _fruit, _image)
-                                                .then((val) async {
+                                            if (_image != null)
+                                              forum
+                                                  .postQuery(_subject, _query,
+                                                      email, _fruit, _image)
+                                                  .then((val) async {
+                                                this.setState(() {
+                                                  isLoading = false;
+                                                  _image = null;
+                                                  postingQuery = false;
+                                                });
+                                                if (val.data['success']) {
+                                                  Fluttertoast.showToast(
+                                                      msg: 'Query Posted',
+                                                      toastLength:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      backgroundColor:
+                                                          Colors.green,
+                                                      textColor: Colors.white,
+                                                      fontSize: 16.0);
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                      msg: val.data['msg'],
+                                                      toastLength:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      textColor: Colors.white,
+                                                      fontSize: 16.0);
+                                                }
+                                              });
+                                            else {
                                               this.setState(() {
                                                 isLoading = false;
                                                 _image = null;
                                                 postingQuery = false;
                                               });
-                                              if (val.data['success']) {
-                                                Fluttertoast.showToast(
-                                                    msg: 'Query Posted',
-                                                    toastLength:
-                                                        Toast.LENGTH_SHORT,
-                                                    gravity:
-                                                        ToastGravity.BOTTOM,
-                                                    backgroundColor:
-                                                        Colors.green,
-                                                    textColor: Colors.white,
-                                                    fontSize: 16.0);
-                                              } else {
-                                                Fluttertoast.showToast(
-                                                    msg: "Post Failed",
-                                                    toastLength:
-                                                        Toast.LENGTH_SHORT,
-                                                    gravity:
-                                                        ToastGravity.BOTTOM,
-                                                    backgroundColor: Colors.red,
-                                                    textColor: Colors.white,
-                                                    fontSize: 16.0);
-                                              }
-                                            });
+                                              Fluttertoast.showToast(
+                                                  msg:
+                                                      "Please select an image too! and try again",
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  backgroundColor: Colors.red,
+                                                  textColor: Colors.white,
+                                                  fontSize: 16.0);
+                                            }
                                           } else {
                                             var errMsg;
                                             if (!_formSubject.currentState
@@ -616,14 +787,23 @@ class _CommunityState extends State<Community> {
     );
   }
 
-  Widget Post(context, Color color, Query query) {
+  ////
+
+  Widget Post(context, Color color, Query query, String email) {
+    int likes = 0;
+    bool iLiked = false;
+    for (var i in query.likers) {
+      likes += 1;
+      if (i.email == email) iLiked = true;
+    }
+
     return Container(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
         child: GestureDetector(
           onTap: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => Replies(query)));
+                MaterialPageRoute(builder: (context) => Replies(query, likes)));
           },
           child: Card(
             shape: RoundedRectangleBorder(
@@ -662,13 +842,25 @@ class _CommunityState extends State<Community> {
                                   Container(
                                       height: 40,
                                       width: 40,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(50),
-                                        child: FittedBox(
-                                          child: Image.network(query.imageURL),
-                                          fit: BoxFit.fill,
-                                        ),
-                                      )),
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            _showUserModal(
+                                                context, query.author);
+                                          },
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            child: FittedBox(
+                                              child: query.author.pictureUrl !=
+                                                      ''
+                                                  ? Image.network(
+                                                      query.author.pictureUrl)
+                                                  : SvgPicture.asset(
+                                                      'assets/images/farmer-avatar.svg',
+                                                    ),
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ))),
                                   SizedBox(
                                     width: 10,
                                   ),
@@ -683,14 +875,20 @@ class _CommunityState extends State<Community> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                query.author.name,
-                                                style: TextStyle(
-                                                  color: primary_Color,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
+                                              GestureDetector(
+                                                  onTap: () {
+                                                    _showUserModal(
+                                                        context, query.author);
+                                                  },
+                                                  child: Text(
+                                                    query.author.name,
+                                                    style: TextStyle(
+                                                      color: primary_Color,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 14,
+                                                    ),
+                                                  )),
                                             ],
                                           )),
                                       SizedBox(
@@ -764,45 +962,103 @@ class _CommunityState extends State<Community> {
                               SizedBox(
                                 height: 5,
                               ),
+                              Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Container(
+                                    padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: secondary_Color),
+                                    child: Text(
+                                      query.replies.length.toString() +
+                                          " REPLIES",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  )),
+                              SizedBox(
+                                height: 5,
+                              ),
                               Divider(color: lightgrey),
                               SizedBox(
                                 height: 5,
                               ),
                               Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Icon(
-                                    Icons.thumb_up,
-                                    color: Colors.blue,
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      GestureDetector(
+                                          onTap: () {
+                                            forum.toggleQueryLike(query.id);
+                                            setState(() {
+                                              filterTags = filterTags;
+                                            });
+                                          },
+                                          child: Icon(Icons.thumb_up,
+                                              size: iLiked ? 28 : 26,
+                                              color: iLiked
+                                                  ? Colors.blue
+                                                  : Colors.blueGrey)),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        likes.toString(),
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    'Upvote',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Icon(
-                                    Icons.thumb_down,
-                                    color: Colors.red,
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    'Downvote',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 12,
-                                    ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Reply',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 2,
+                                          ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Replies(
+                                                              query, likes)));
+                                            },
+                                            child: Icon(
+                                              Icons.reply,
+                                              color: primary_Color,
+                                              size: 40,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      // SizedBox(
+                                      //   height: 5,
+                                      // ),
+                                    ],
                                   ),
                                 ],
-                              ),
+                              )
                             ],
                           ))),
                   SizedBox(

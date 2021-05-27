@@ -89,6 +89,21 @@ getQueries() async {
   }
 }
 
+getReplies(queryId) async {
+  try {
+    return await http
+        .get('https://fruitdoctor.herokuapp.com/getReplies/$queryId');
+  } catch (e) {
+    Fluttertoast.showToast(
+        msg: e.response.data['msg'].toString(),
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
+  }
+}
+
 String timeAgo(String s) {
   DateTime d = DateTime.parse(s);
   Duration diff = DateTime.now().difference(d);
@@ -125,6 +140,23 @@ postReply(postID, replyText, replierEmail) async {
         textColor: Colors.white,
         fontSize: 16.0);
   }
+}
+
+//Like or unlike a query
+toggleQueryLike(queryId) async {
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  var currentUserToken = await sharedPreferences.get('token');
+  dio.options.headers['Authorization'] = 'Bearer $currentUserToken';
+  return await dio.post('https://fruitdoctor.herokuapp.com/rateQuery/$queryId');
+}
+
+//like or unlike a reply on a query
+toggleReplyLike(queryId, replyId) async {
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  var currentUserToken = await sharedPreferences.get('token');
+  dio.options.headers['Authorization'] = 'Bearer $currentUserToken';
+  return await dio
+      .post('https://fruitdoctor.herokuapp.com/rateReply/$queryId/$replyId');
 }
 
 // fruitImage(fruit){
