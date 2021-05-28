@@ -32,6 +32,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
   String fruit;
   String purpose;
   String status = "Prediction";
+  bool resultsArrived = false;
   int noOfDetectedDisease = 0;
   List<String> detectedDiseases;
   _GalleryScreenState(this.endpoint, this.fruit, this.purpose);
@@ -148,8 +149,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           backgroundColor: primary_Color,
         ),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: ListView(
             children: <Widget>[
               SizedBox(height: 5),
               Center(
@@ -176,7 +176,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                           )
                         : Container(
                             decoration: BoxDecoration(
-                                color: primary_Color.withOpacity(0.7),
+                                color: Colors.grey,
                                 borderRadius: BorderRadius.circular(10)),
                             width: 100,
                             height: 100,
@@ -189,111 +189,131 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 ),
               )),
               SizedBox(
-                height: 20,
+                height: 10,
               ),
               Center(
                 child: Consumer<ModelResults>(builder: (_, myResults, child) {
-                  return RaisedButton(
-                    child: Text('Send to Server'),
-                    onPressed: () async {
-                      Dio dio = new Dio();
+                  return ButtonTheme(
+                      buttonColor: secondary_Color,
+                      minWidth: 100,
+                      height: 40,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
+                        child: Text(
+                          purpose,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () async {
+                          Dio dio = new Dio();
 
-                      var address = 'http://10.0.2.2:5000/$endpoint';
+                          var address = 'http://10.0.2.2:5000/$endpoint';
 //192.168.0.105
-                      debugPrint('here');
-                      if (_image != null) {
-                        dynamic img_file = _image.path.split('/').last;
+                          debugPrint('here');
+                          if (_image != null) {
+                            dynamic img_file = _image.path.split('/').last;
 
-                        ////The other way to do it
-                        FormData formdata;
-                        var imageName;
+                            ////The other way to do it
+                            FormData formdata;
+                            var imageName;
 
-                        setState(() {
-                          status = "loading";
-                        });
-                        imageName = _image.path.split('/').last;
-                        final mimeTypeData = lookupMimeType(_image.path,
-                            headerBytes: [0xFF, 0xD8]).split('/');
-                        formdata = new FormData();
-                        formdata.files.add(MapEntry(
-                          "img",
-                          await MultipartFile.fromFile(_image.path,
-                              filename: imageName,
-                              contentType: new MediaType(
-                                  mimeTypeData[0], mimeTypeData[1])),
-                        ));
+                            setState(() {
+                              status = "loading";
+                            });
+                            imageName = _image.path.split('/').last;
+                            final mimeTypeData = lookupMimeType(_image.path,
+                                headerBytes: [0xFF, 0xD8]).split('/');
+                            formdata = new FormData();
+                            formdata.files.add(MapEntry(
+                              "img",
+                              await MultipartFile.fromFile(_image.path,
+                                  filename: imageName,
+                                  contentType: new MediaType(
+                                      mimeTypeData[0], mimeTypeData[1])),
+                            ));
 
-                        ////
+                            ////
 
-                        FormData dt = FormData.fromMap({
-                          "img": await MultipartFile.fromFile(_image.path,
-                              filename: img_file)
-                        });
+                            FormData dt = FormData.fromMap({
+                              "img": await MultipartFile.fromFile(_image.path,
+                                  filename: img_file)
+                            });
 
-                        Response<String> res =
-                            await dio.post(address, data: dt);
-                        var js = jsonDecode(res.data);
-                        print(js);
+                            Response<String> res =
+                                await dio.post(address, data: dt);
+                            var js = jsonDecode(res.data);
+                            print(js);
 
-                        this.setState(() {
-                          if (endpoint == "predictPapayaDisease")
-                            classes = papayaDiseases;
-                          else if (endpoint == "predictAppleDisease")
-                            classes = appleDiseases;
-                          else if (endpoint == "predictCornDisease")
-                            classes = cornDiseases;
-                          else if (endpoint == "predictStrawberryDisease")
-                            classes = strawberryDiseases;
-                          else if (endpoint == "gradeApple")
-                            classes = appleGrades;
-                          else if (endpoint == "gradeBanana")
-                            classes = bananaGrades;
-                          else if (endpoint == "gradeOrange")
-                            classes = orangeGrades;
-                          percentages = new List<double>(classes.length);
+                            this.setState(() {
+                              if (endpoint == "predictPapayaDisease")
+                                classes = papayaDiseases;
+                              else if (endpoint == "predictAppleDisease")
+                                classes = appleDiseases;
+                              else if (endpoint == "predictCornDisease")
+                                classes = cornDiseases;
+                              else if (endpoint == "predictStrawberryDisease")
+                                classes = strawberryDiseases;
+                              else if (endpoint == "gradeApple")
+                                classes = appleGrades;
+                              else if (endpoint == "gradeBanana")
+                                classes = bananaGrades;
+                              else if (endpoint == "gradeOrange")
+                                classes = orangeGrades;
+                              percentages = new List<double>(classes.length);
 
-                          for (var i = 0; i < classes.length; i++) {
-                            percentages[i] =
-                                double.parse(js[i.toString()]) * 100;
+                              for (var i = 0; i < classes.length; i++) {
+                                percentages[i] =
+                                    double.parse(js[i.toString()]) * 100;
+                              }
+                              resultsArrived = true;
+                            });
+
+                            var maxIndex = 0;
+                            double maxvalue = 0;
+                            for (var i = 0; i < classes.length; i++) {
+                              if (percentages[i] > maxvalue) {
+                                maxIndex = i;
+                                maxvalue = percentages[i];
+                              }
+                            }
+                            print(maxIndex);
+                            setState(() {
+                              touchedIndex = maxIndex;
+                            });
+
+                            //
+
+                            setState(() {
+                              status = classes[maxIndex].toString();
+                            });
+                          } else {
+                            setState(() {
+                              status = "Select an image";
+                            });
                           }
-                        });
-
-                        var maxIndex = 0;
-                        double maxvalue = 0;
-                        for (var i = 0; i < classes.length; i++) {
-                          if (percentages[i] > maxvalue) {
-                            maxIndex = i;
-                            maxvalue = percentages[i];
-                          }
-                        }
-                        print(maxIndex);
-                        setState(() {
-                          touchedIndex = maxIndex;
-                        });
-
-                        //
-
-                        setState(() {
-                          status = classes[maxIndex].toString();
-                        });
-                      } else {
-                        setState(() {
-                          status = "Select an image";
-                        });
-                      }
-                    },
-                  );
+                        },
+                      ));
                 }),
               ),
+              SizedBox(
+                height: 20,
+              ),
               Consumer<ModelResults>(builder: (_, myResults, child) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                  child: Text(status,
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.redAccent)),
-                );
+                return Card(
+                    color: primary_Color,
+                    elevation: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Text(status,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
+                    ));
               }),
               AspectRatio(
                 aspectRatio: 1.1,
@@ -352,17 +372,29 @@ class _GalleryScreenState extends State<GalleryScreen> {
                   ),
                 ),
               ),
-              RaisedButton(
-                  child: Text('Get Cure'),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.rightToLeft,
-                          child: DetectedDiseasesScreen(
-                              percentages, papayaDiseases, fruit, _image),
-                        ));
-                  })
+              (resultsArrived && purpose != "Find Grade" && status != "Healthy")
+                  ? ButtonTheme(
+                      child: RaisedButton(
+                          color: secondary_Color,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Text(
+                            'Get Cure',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: DetectedDiseasesScreen(
+                                      percentages, classes, fruit, _image),
+                                ));
+                          }))
+                  : Container(),
             ],
           ),
         ));

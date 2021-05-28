@@ -170,7 +170,7 @@ class _ProfileState extends State<Profile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Flexible(
-                        flex: 2,
+                        flex: 3,
                         child: Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(

@@ -87,26 +87,30 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                                 alignment: Alignment.center,
                                 children: [
                                   Container(
-                                      width: 100.0,
-                                      height: 100.0,
-                                      decoration: new BoxDecoration(
-                                          shape: BoxShape.rectangle,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          // boxShadow: [
-                                          //   BoxShadow(
-                                          //     color:
-                                          //         Colors.grey.withOpacity(0.8),
-                                          //     spreadRadius: 2,
-                                          //     blurRadius: 10,
-                                          //     offset: Offset(1,
-                                          //         0), // changes position of shadow
-                                          //   )
-                                          // ],
-                                          image: new DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: new NetworkImage(
-                                                  pictureUrl)))),
+                                    width: 100.0,
+                                    height: 100.0,
+                                    decoration: new BoxDecoration(
+                                        shape: BoxShape.rectangle,
+                                        borderRadius: BorderRadius.circular(10),
+                                        // boxShadow: [
+                                        //   BoxShadow(
+                                        //     color:
+                                        //         Colors.grey.withOpacity(0.8),
+                                        //     spreadRadius: 2,
+                                        //     blurRadius: 10,
+                                        //     offset: Offset(1,
+                                        //         0), // changes position of shadow
+                                        //   )
+                                        // ],
+                                        image: new DecorationImage(
+                                            fit: BoxFit.fill,
+                                            image: (pictureUrl != null &&
+                                                    pictureUrl != "")
+                                                ? new NetworkImage(pictureUrl)
+                                                : SvgPicture.asset(
+                                                    'assets/images/farmer-avatar.svg',
+                                                  ))),
+                                  )
                                 ],
                               )),
                           SizedBox(

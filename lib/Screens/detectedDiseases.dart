@@ -39,14 +39,14 @@ class _DetectedDiseasesScreenState extends State<DetectedDiseasesScreen> {
   Color lightgrey = Color(0xffEAEAEA);
   _DetectedDiseasesScreenState(
       this.percentages, this.diseases, this.fruit, this.image);
-  List<double> percentages1 = [31.1, 31.2, 31.8, 5.0, 1.0];
+  List<double> percentages1;
 
   List<int> indicesOfDetectedDiseases;
   @override
   void initState() {
     // TODO: implement initState
+    percentages1 = percentages.map((e) => e).toList();
     instances = 0;
-    fruit = 'papaya';
     super.initState();
     List<double> percentages2 = percentages1;
     percentages2.sort();
@@ -57,10 +57,19 @@ class _DetectedDiseasesScreenState extends State<DetectedDiseasesScreen> {
       }
     }
     diseasesToShow = new List<String>(noOfDiseasesToShow);
+    bool healthy = false;
     for (var i = 0; i < noOfDiseasesToShow; i++) {
-      diseasesToShow[i] = diseases[
-          percentages1.indexOf(percentages2[percentages2.length - i - 1])];
+      if (diseases[
+              percentages.indexOf(percentages2[percentages2.length - i - 1])] !=
+          "Healthy") {
+        diseasesToShow[i] = diseases[
+            percentages.indexOf(percentages2[percentages2.length - i - 1])];
+      } else {
+        healthy = true;
+      }
     }
+
+    if (healthy) noOfDiseasesToShow -= 1;
   }
 
   getCure(fruit, disease) async {
@@ -90,7 +99,7 @@ class _DetectedDiseasesScreenState extends State<DetectedDiseasesScreen> {
             child: Column(
               children: [
                 Flexible(
-                  flex: 1,
+                  flex: 2,
                   child: Card(
                       child: Container(
                           padding: EdgeInsets.all(10),
@@ -165,7 +174,7 @@ class _DetectedDiseasesScreenState extends State<DetectedDiseasesScreen> {
                               ]))),
                 ),
                 Flexible(
-                    flex: 4,
+                    flex: 5,
                     child: ListView(
                       children: [
                         for (var i in diseasesToShow)
