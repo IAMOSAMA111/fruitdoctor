@@ -994,10 +994,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                                       Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  GalleryScreen(
-                                                                      _gradingEndpoints[
-                                                                          _selectedIndex])));
+                                                              builder: (context) => GalleryScreen(
+                                                                  _gradingEndpoints[
+                                                                      _selectedIndex],
+                                                                  _fruits[
+                                                                      _selectedIndex],
+                                                                  "Find Grade")));
                                                     },
                                                     child: Row(
                                                       mainAxisAlignment:

@@ -149,7 +149,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
                     this.setState(() {
                       loggingOut = false;
                     });
-                    Navigator.push(
+
+                    Navigator.pushReplacement(
                         context,
                         PageTransition(
                           type: PageTransitionType.rightToLeft,
